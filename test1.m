@@ -1,3 +1,5 @@
+% code for solving the equations using syms
+
 syms theta1 x1 y1 dtheta1 dx1 dy1 ddtheta1 ddx1 ddy1 theta2 x2 y2 dtheta2 dx2 dy2 ddtheta2 ddx2 ddy2 
 syms Tin bp r kp Ip F Mpd A a Tout Mw1 Mw2 b k
 f(1)=Tin-bp*(dx1/r-dtheta1)-kp*(x1/r-theta1)-Ip*ddtheta1==0;
