@@ -1,0 +1,37 @@
+%{
+ROB 542: Actuator Dyamics, Assignment 5
+
+Rolling Diaphragm Hydrostatic Transmission simulation
+
+Main code
+Last modified by Hannah Kolano 5/13/21
+%}
+
+close all
+
+%% Set up parameters
+
+% Geometry
+p.r = 0.2; % radius of the pulley, in m
+p.A1 = 0.1; % Area of input piston, in m^2
+p.A2 = 0.1; % Area of ouput piston, in m^2
+p.a = 0.001; % Area of the tube, in m^2
+
+% Masses
+p.Ip = 0.5;   % pulley inertia
+p.mpd = 0.1;  % Piston and diaphragm mass, kg
+p.mw = 0.1;   % Total mass of the water
+p.mw2 = p.mw/2;   % Mass of half the water
+
+% Stiffnesses
+p.kp = 10000; % Stiffness of the belt (UNITS???)
+p.kh = 230;   % Stiffness of the hose (UNITS???)
+
+% Damping
+p.bp = 1;     % Damping of the belt 
+p.bf = 1;     % Viscous friction
+
+%% Simulate the system
+X0 = [0 0 0 0 0 0 0 0];
+
+[t_vec, X_vec, ~, mask] = simA3(X0,p);
