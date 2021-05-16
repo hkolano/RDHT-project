@@ -50,3 +50,8 @@ plot(t_vec, X_vec(3,:))
 hold on
 plot(t_vec, X_vec(5,:))
 legend('x1', 'x2')
+
+%Animate the mass
+exportVideo = false;
+playbackRate = .5;
+RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
