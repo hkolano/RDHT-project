@@ -5,21 +5,25 @@ FPS=60;
 addpath(fullfile(pwd,'..', 'groupTheory'))
 % For CubeClass and SpringClass
 addpath(fullfile(pwd,'..', 'visualization'))
+%% piston for the wall 
+piston_wL = .5; %width
+piston_hL = 1; %height
 
-piston_wL = .5;
-piston_hL = 1;
-
-piston_LaCx=0;
-piston_LaCy=3;
-piston_LbCx=1;
+piston_LaCx=0; % A and B are input pistons - L (left)
+piston_LaCy=3; 
+piston_LbCx=1; 
 piston_LbCy=3;
 
-piston_RaCx=3;
+piston_RaCx=3; % A and B are output pistons - R (left)
 piston_RaCy=3;
 piston_RbCx=4;
 piston_RbCy=3;
 
-pulley_aR = .5;
+piston_wR = .5;
+piston_hR = 1;
+
+%%% pulley dimensions
+pulley_aR = .5; % pulley are A and B , R-radius, C center co ordinates
 pulley_aCx=.5;
 pulley_aCy=2;
 pulley_bR = .5;
@@ -27,8 +31,8 @@ pulley_bCx=3.5;
 pulley_bCy=2;
 
 
-piston_wR = .5;
-piston_hR = 1;
+
+% inner pistons are A and B (two in left and 2 in right) , R-radius, C center co ordinates
 
 pistonIn_wL = .25;
 pistonIn_hL = 1;
@@ -44,9 +48,11 @@ pistonInner_RbCy=3;
 pistonIn_wR = .25;
 pistonIn_hR = 1;
 
+%% diaphragm dimentions
 diaphragm_LBaseH=.25;
 diaphragm_RBaseH=.25;
 
+%%% set up objects 
 piston_La =CubeClass([piston_wL,piston_hL]);
 piston_Lb =CubeClass([piston_wL,piston_hL]);
 piston_Ra =CubeClass([piston_wR,piston_hR]);
@@ -61,10 +67,12 @@ pistonInner_Rb =CubeClass_A([pistonIn_wR,pistonIn_hR]);
 
 % Create a figure handle
 h.figure = figure;
+
 %This sets figure dimension which will dictate video dimensions
 h.figure.Position(3:4) = [1280 720];
 movegui(h.figure)
 
+%% set up  plot
 piston_La.plot
 piston_Lb.plot
 piston_Ra.plot
@@ -73,8 +81,8 @@ pistonInner_La.plot
 pistonInner_Lb.plot
 pistonInner_Ra.plot
 pistonInner_Rb.plot
-pulley_aObj.plot
-pulley_bObj.plot
+% pulley_aObj.plot
+% pulley_bObj.plot
 
 %%% ploting the belt around the pulley that appears stationary
 ph=0:.1:pi;
@@ -88,7 +96,18 @@ end
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
 
-%%%%% 
+%%%%% the pulley plot which is  stationary
+ph=0:.1:2*pi;
+for i=1:length(ph)
+    pulleyLx(i)=pulley_aCx+pulley_aR*cos(ph(i)); 
+    pulleyLy(i)=pulley_aCy+pulley_aR*sin(ph(i)); 
+    pulleyRx(i)=pulley_bCx+pulley_bR*cos(ph(i)); 
+    pulleyRy(i)=pulley_bCy+pulley_bR*sin(ph(i));
+        
+        
+end
+    fill(pulleyLx,pulleyLy,[1,1,.5]);
+    fill(pulleyRx,pulleyRy,[1,1,.5]);
 
 view(2)
 title('Simulation')
@@ -110,20 +129,26 @@ flag=0;
 for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     
     if flag==1
-        delete(plt)
+        delete(plt) % reset 2D plots
     else flag==0
          flag =1;
-     end
+    end
     
+     %% input from the main code
     x_state = interp1(t',X',t_plt);
     pistonInner_LaCy=x_state(3)*10000+3
     pistonInner_LbCy=-x_state(3)*10000+3
-    pistonInner_RbCy=x_state(5)*10000+3
+    pistonInner_RaCy=x_state(5)*10000+3
     pistonInner_RbCy=-x_state(5)*10000+3
+    input=x_state(1)*10000
+    
+    
     % Set axis limits (These will respect the aspect ratio set above)
     h.figure.Children(1).XLim = [-1, 5];
     h.figure.Children(1).YLim = [-1, 5];
     h.figure.Children(1).ZLim = [-1.0, 1.0];
+    
+    %% resets 
     piston_La.resetFrame
     piston_Lb.resetFrame
     piston_Ra.resetFrame
@@ -137,14 +162,17 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     
 
  
-    
+    %% pistons 
     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
     
-    pulley_aObj.globalMove(SE3([pulley_aCx, pulley_aCy, 0]))
-    pulley_bObj.globalMove(SE3([pulley_bCx, pulley_bCy, 0]))
+    %% pulley 
+%     pulley_aObj.globalMove(SE3([pulley_aCx, pulley_aCy, 0]))
+%     pulley_bObj.globalMove(SE3([pulley_bCx, pulley_bCy, 0]))
+    
+
     
     %% inner piston that moves
     pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]))
@@ -195,14 +223,19 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(12)= plot([water_BLx water_BLx],[water_BLy 4.5],'b','LineWidth',6);
     plt(13)= plot([water_BLx water_ARx],[4.5 4.5],'b','LineWidth',6);
     plt(14)= plot([water_ARx water_ARx],[4.5 water_ARy],'b','LineWidth',6);
+    
+    %% ploting the motor movement
+    
+    plt(15)=plot([pulley_aCx pulley_aCx+pulley_aR*cos(input)],[pulley_aCy pulley_aCy+pulley_aR*sin(input)],'b','Linewidth',2);
+    plt(15)=plot([pulley_bCx pulley_bCx+pulley_bR*cos(output)],[pulley_bCy pulley_bCy+pulley_bR*sin(output)],'b','Linewidth',2);
 %     
 %     piston_La.updatePlotData
 %     piston_Lb.updatePlotData
 %     piston_Ra.updatePlotData
 %     piston_Rb.updatePlotData
     
-    pulley_aObj.updatePlotData
-    pulley_bObj.updatePlotData
+%     pulley_aObj.updatePlotData
+%     pulley_bObj.updatePlotData
     
     pistonInner_La.updatePlotData
     pistonInner_Lb.updatePlotData
