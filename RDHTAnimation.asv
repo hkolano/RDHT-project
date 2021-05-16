@@ -118,7 +118,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     x_state = interp1(t',X',t_plt);
     pistonInner_LaCy=x_state(3)*10000+3
     pistonInner_LbCy=-x_state(3)*10000+3
-    pistonInner_RaCy=x_state(5)*10000+3
+    pistonInner_RbCy=x_state(5)*10000+3
     pistonInner_RbCy=-x_state(5)*10000+3
     % Set axis limits (These will respect the aspect ratio set above)
     h.figure.Children(1).XLim = [-1, 5];
