@@ -13,7 +13,7 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
     % Running time
     t_start = 0;
     t_end = 50;
-    dt = 0.05;
+    dt = 0.5;
 
     t_vec = t_start:dt:t_end;
     X_vec = zeros(length(X0), length(t_vec));
@@ -32,17 +32,8 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
         % Kept framework for hybrid dynamics
 %         if p.state == 1
             sol = ode45(dynamics_fun, [t_start,t_end], X0, options);
-%             disp('Contact! at t = ')
-%             disp(sol.x(end))
-%             p.state = 0;
-%         else 
-%             sol = ode45(conn_dyn, [t_start,t_end], X0, contactoptions);
-%             disp('Disconnected! at t = ')
-%             disp(sol.x(end))
-%             p.state = 1;
-%         end
+            
 
-        % Concatenate solution sets
         sol_set = [sol_set, {sol}];
         % Setup t_start for the next ode45 call so it is at the end of the 
         % last call 
@@ -77,7 +68,9 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = 5*sin(t);
+   fq=2;
+   a=5;
+    Tau_in = -a*fq*fq*cos(t*fq)
     
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -102,60 +95,8 @@ function dX = dyn(t,X,p)
 %         0                   0                   0                           0                           0                           0                           0                   0; ...
 %         0                   0                   0                           0                           0                           0                           0                   1; ...
 %         0                   0                   0                           0                           0                           0                           0                   0];
-    dX = A*X + [0; Tau_in; 0; 0; 0; 0; 0; 0];
+
+dX = A*X + [0; Tau_in; 0; 0; 0; 0; 0; 0];
 end % dynamics
 
-%% Hybrid functions
-% function dX = connecteddynamics(t,X,p,ctlr_fun)
-%     % t == time
-%     % X == the state
-%     % p == parameters structure
-%     F_ctrl = ctlr_fun(t,X);
-%     
-%     y_act  = X(1); % Position of actuator
-%     y_load = X(2); % Position of load
-%     dy_act = X(3); % Velocity of actuator
-%     dy_load = X(4); % Velocity of load
-% 
-%     % Return the state derivative
-%     dX = zeros(4,1);
-%     dX(1) = dy_act;     % Velocity of actuator
-%     dX(2) = dy_load;    % Velocity of load
-%     dX(3) = (F_ctrl + p.k*(y_load-y_act) + p.c*(dy_load-dy_act))/p.actm;          % Acceleration of actuator
-%     dX(4) = ( - p.k*(y_load-y_act) - p.c*(dy_load-dy_act))/p.loadm; % Acceleration of load
-% end % dynamics
-% 
-% function [eventVal, isterminal, direction] = contactSpringEvent(t,X,p)
-% % halting event function for ODE simulation. Events are distance to
-%     % ceiling and distance to paddle
-%     % Inputs
-%     % t: time, X: the state, p: parameters structure
-%     % Outputs
-%     % eventVal: Vector of event functions that halt at zero crossings
-%     % isterminal: if the simulation should halt (yes for both)
-%     % direction: which direction of crossing should the sim halt (positive)
-%     equil = X(2)-X(1); % distance between load and actuator, 0 when spring is at equilibrium
-%     
-%     eventVal = equil;   % when spring at equilibrium distance...
-%     isterminal = 1;     % stops the sim
-%     direction = 0;      % any direction
-% end
-% 
-% function [eventVal, isterminal, direction] = liftoffSpringEvent(t,X,p)
-% % halting event function for ODE simulation. Events are distance to
-%     % ceiling and distance to paddle
-%     % Inputs
-%     % t: time, X: the state, p: parameters structure
-%     % Outputs
-%     % eventVal: Vector of event functions that halt at zero crossings
-%     % isterminal: if the simulation should halt (yes for both)
-%     % direction: which direction of crossing should the sim halt (positive)
-%     y_act  = X(1); % Position of actuator
-%     y_load = X(2); % Position of load
-%     dy_act = X(3); % Velocity of actuator
-%     dy_load = X(4); % Velocity of load
-%    
-%     eventVal =  - p.k*(y_load-y_act) - p.c*(dy_load-dy_act);   % when force from spring and damper = 0...
-%     isterminal = 1;     % stops the sim
-%     direction = -1;      % doesn't matter which direction
-% end
+

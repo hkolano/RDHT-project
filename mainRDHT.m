@@ -29,8 +29,8 @@ p.kp = 100; % Stiffness of the belt 100 MPa
 p.kh = 2;   % Stiffness of the hose (UNITS???)
 
 % Damping
-p.bp = .2;     % Damping of the belt 
-p.bf = .6;     % Viscous friction
+p.bp = 0.1;     % Damping of the belt 
+p.bf = 0.6;     % Viscous friction
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
@@ -41,17 +41,17 @@ X0 = [0 0 0 0 0 0 0 0];
 figure
 plot(t_vec, X_vec(1,:))
 hold on
-plot(t_vec, X_vec(7,:))
-% plot(t_vec, 5*sin(t_vec))
-legend('Theta1', 'Theta2', 'Force input')
-
-figure
 plot(t_vec, X_vec(3,:))
-hold on
-plot(t_vec, X_vec(5,:))
-legend('x1', 'x2')
-
-%Animate the mass
-exportVideo = false;
-playbackRate = .5;
-RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
+% % plot(t_vec, 5*sin(t_vec))
+% legend('Theta1', 'Theta2', 'Force input')
+% 
+% figure
+% plot(t_vec, X_vec(3,:))
+% hold on
+% plot(t_vec, X_vec(5,:))
+% legend('x1', 'x2')
+% 
+% %Animate the mass
+% exportVideo = false;
+% playbackRate = .5;
+% RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);

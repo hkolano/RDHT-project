@@ -136,12 +136,12 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     
      %% input from the main code
     x_state = interp1(t',X',t_plt);
-    pistonInner_LaCy=x_state(3)*10000+3
-    pistonInner_LbCy=-x_state(3)*10000+3
-    pistonInner_RaCy=x_state(5)*10000+3
-    pistonInner_RbCy=-x_state(5)*10000+3
-    input=x_state(1)*10000
-    output=-x_state(7)*10000
+    pistonInner_LaCy=x_state(3)*10000+3;
+    pistonInner_LbCy=-x_state(3)*10000+3;
+    pistonInner_RaCy=x_state(5)*10000+3;
+    pistonInner_RbCy=-x_state(5)*10000+3;
+    input=x_state(1)*10000;
+    output=-x_state(7)*10000;
     
     
     % Set axis limits (These will respect the aspect ratio set above)
@@ -164,10 +164,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
  
     %% pistons 
-    piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
-    piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
-    piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
-    piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
+    piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]));
+    piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]));
+    piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]));
+    piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]));
     
     %% pulley 
 %     pulley_aObj.globalMove(SE3([pulley_aCx, pulley_aCy, 0]))
@@ -176,10 +176,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
     
     %% inner piston that moves
-    pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]))
-    pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]))
-    pistonInner_Ra.globalMove(SE3([pistonInner_RaCx, pistonInner_RaCy, 0]))
-    pistonInner_Rb.globalMove(SE3([pistonInner_RbCx, pistonInner_RbCy, 0]))
+    pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]));
+    pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]));
+    pistonInner_Ra.globalMove(SE3([pistonInner_RaCx, pistonInner_RaCy, 0]));
+    pistonInner_Rb.globalMove(SE3([pistonInner_RbCx, pistonInner_RbCy, 0]));
     
     %% ploting the belt from pulley to the inner piston
     plt(1)=plot([pulley_aCx+pulley_aR*cos(-pi) pistonInner_LaCx],[pulley_aCy+pulley_aR*sin(-pi) pistonInner_LaCy-pistonIn_hL*.5],'r','LineWidth',4);
