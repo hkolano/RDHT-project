@@ -78,7 +78,7 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = .5*cos(t);
+    Tau_in = 1*cos(t);
 %     Tau_in = 0;
     
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -89,7 +89,7 @@ function dX = dyn(t,X,p)
     bpaOVA2  = p.bp*p.a/p.A2;
     
     if abs(X(3)) > p.strokelim
-        k = 50;
+        k = 5000;
         b = 10;
     else
         k = 0;

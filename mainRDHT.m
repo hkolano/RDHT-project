@@ -30,13 +30,11 @@ p.mw2 = p.mw/2;   % Mass of half the water
 
 % Stiffnesses
 p.kp = 10000; % Stiffness of the belt N/m (from paper sources)
-p.kh = 5;   % Stiffness of the hose (UNITS???)
-% p.kp = 50; % Stiffness of the belt (UNITS???)
-% p.kh = 1;   % Stiffness of the hose (UNITS???)
+p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
-p.bp = .1;     % Damping of the belt
-p.bf = 1; %547;     % Viscous friction
+p.bp = .5;     % Damping of the belt
+p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
