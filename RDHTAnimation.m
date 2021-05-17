@@ -49,8 +49,8 @@ pistonIn_wR = .25;
 pistonIn_hR = 1;
 
 %% diaphragm dimentions
-diaphragm_LBaseH=.25;
-diaphragm_RBaseH=.25;
+diaphragm_LBaseH=0;
+diaphragm_RBaseH=0;
 
 %%% set up objects 
 piston_La =CubeClass([piston_wL,piston_hL]);
@@ -73,10 +73,10 @@ h.figure.Position(3:4) = [1280 720];
 movegui(h.figure)
 
 %% set up  plot
-piston_La.plot
-piston_Lb.plot
-piston_Ra.plot
-piston_Rb.plot
+% piston_La.plot
+% piston_Lb.plot
+% piston_Ra.plot
+% piston_Rb.plot
 pistonInner_La.plot
 pistonInner_Lb.plot
 pistonInner_Ra.plot
@@ -135,13 +135,13 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     end
     
      %% input from the main code
-    x_state = interp1(t',X',t_plt);
-    pistonInner_LaCy=x_state(3)*10000+3;
-    pistonInner_LbCy=-x_state(3)*10000+3;
-    pistonInner_RaCy=x_state(5)*10000+3;
-    pistonInner_RbCy=-x_state(5)*10000+3;
-    input=x_state(1)*10000;
-    output=-x_state(7)*10000;
+    x_state = interp1(t',X,t_plt);
+    pistonInner_LaCy=x_state(3)*10+3
+    pistonInner_LbCy=-x_state(3)*10+3
+    pistonInner_RaCy=x_state(5)*10+3
+    pistonInner_RbCy=-x_state(5)*10+3
+    input=-x_state(1)
+    output=-x_state(7)
     
     
     % Set axis limits (These will respect the aspect ratio set above)
@@ -150,24 +150,24 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     h.figure.Children(1).ZLim = [-1.0, 1.0];
     
     %% resets 
-    piston_La.resetFrame
-    piston_Lb.resetFrame
-    piston_Ra.resetFrame
-    piston_Rb.resetFrame
+%     piston_La.resetFrame
+%     piston_Lb.resetFrame
+%     piston_Ra.resetFrame
+%     piston_Rb.resetFrame
     pistonInner_La.resetFrame
     pistonInner_Lb.resetFrame
     pistonInner_Ra.resetFrame
     pistonInner_Rb.resetFrame
-    pulley_aObj.resetFrame
-    pulley_bObj.resetFrame
-    
+%     pulley_aObj.resetFrame
+%     pulley_bObj.resetFrame
+%     
 
  
     %% pistons 
-    piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]));
-    piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]));
-    piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]));
-    piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]));
+%     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
+%     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
+%     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
+%     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
     
     %% pulley 
 %     pulley_aObj.globalMove(SE3([pulley_aCx, pulley_aCy, 0]))
@@ -176,10 +176,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
     
     %% inner piston that moves
-    pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]));
-    pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]));
-    pistonInner_Ra.globalMove(SE3([pistonInner_RaCx, pistonInner_RaCy, 0]));
-    pistonInner_Rb.globalMove(SE3([pistonInner_RbCx, pistonInner_RbCy, 0]));
+    pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]))
+    pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]))
+    pistonInner_Ra.globalMove(SE3([pistonInner_RaCx, pistonInner_RaCy, 0]))
+    pistonInner_Rb.globalMove(SE3([pistonInner_RbCx, pistonInner_RbCy, 0]))
     
     %% ploting the belt from pulley to the inner piston
     plt(1)=plot([pulley_aCx+pulley_aR*cos(-pi) pistonInner_LaCx],[pulley_aCy+pulley_aR*sin(-pi) pistonInner_LaCy-pistonIn_hL*.5],'r','LineWidth',4);
@@ -205,15 +205,15 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
    plt(8)= fill(diaBRx,diaBRy,[1,0,1]);
     %%% ploting the water tubes
     water_ALx=piston_LaCx+piston_wL*.5*cos(pi/2);
-    water_ALy=(piston_LaCy+(piston_hL*.5)-diaphragm_LBaseH)+(pistonInner_LaCy+(pistonIn_hL*.5)-(piston_LaCy+(piston_hL*.5)-diaphragm_LBaseH))*sin(pi/2);
+    water_ALy=(piston_LaCy+(piston_hL*.5))+(pistonInner_LaCy+(pistonIn_hL*.5)-(piston_LaCy+(piston_hL*.5)))*sin(pi/2);
     water_BLx=piston_LbCx+piston_wL*.5*cos(pi/2);
-    water_BLy=(piston_LbCy+(piston_hL*.5)-diaphragm_LBaseH)+(pistonInner_LbCy+(pistonIn_hL*.5)-(piston_LbCy+(piston_hL*.5)-diaphragm_LBaseH))*sin(pi/2);
+    water_BLy=(piston_LbCy+(piston_hL*.5))+(pistonInner_LbCy+(pistonIn_hL*.5)-(piston_LbCy+(piston_hL*.5)))*sin(pi/2);
     
     
     water_ARx=piston_RaCx+piston_wR*.5*cos(pi/2);
-    water_ARy=(piston_RaCy+(piston_hR*.5)-diaphragm_LBaseH)+(pistonInner_RaCy+(pistonIn_hR*.5)-(piston_RaCy+(piston_hR*.5)-diaphragm_LBaseH))*sin(pi/2);
+    water_ARy=(piston_RaCy+(piston_hR*.5))+(pistonInner_RaCy+(pistonIn_hR*.5)-(piston_RaCy+(piston_hR*.5)))*sin(pi/2);
     water_BRx=piston_RbCx+piston_wR*.5*cos(pi/2);
-    water_BRy=(piston_RbCy+(piston_hR*.5)-diaphragm_LBaseH)+(pistonInner_RbCy+(pistonIn_hR*.5)-(piston_RbCy+(piston_hR*.5)-diaphragm_LBaseH))*sin(pi/2);
+    water_BRy=(piston_RbCy+(piston_hR*.5))+(pistonInner_RbCy+(pistonIn_hR*.5)-(piston_RbCy+(piston_hR*.5)))*sin(pi/2);
     
    
     
