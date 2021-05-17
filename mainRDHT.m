@@ -11,26 +11,30 @@ close all
 
 %% Set up parameters
 
+% stroke: 56.8mm
+% cylinders: 25bar max
+% Direct drive motor peak torque 19.6 Nm
+
 % Geometry
-p.r = 0.0125; % radius of the pulley, in m
-p.A1 = 0.0005; % Area of input piston, in m^2 (this is a little under a square inch)
-p.A2 = 0.0005; % Area of ouput piston, in m^2
-p.a = 0.00005; % Area of the tube, in m^2
+p.r = 23.9/1000; % radius of the pulley, in mm (from Design and Experiment...)
+p.A1 = (0.024/2)^2*pi; % Area of input piston, in m^2 (this is a little under a square inch)
+p.A2 = (0.024/2)^2*pi; % Area of ouput piston, in m^2
+p.a = (.006/2)^2*pi; % Area of the tube, in m^2
 
 % Masses
-mp = 0.5;  % Pulley mass
+mp = 0.05;  % Pulley mass
 p.Ip = 0.5*mp*p.r^2;   % pulley inertia
 p.mpd = 0.05;  % Piston and diaphragm mass, kg
 p.mw = 0.1;   % Total mass of the water
 p.mw2 = p.mw/2;   % Mass of half the water
 
 % Stiffnesses
-p.kp = 1000; % Stiffness of the belt (UNITS???)
+p.kp = 100000; % Stiffness of the belt N/m (from paper sources)
 p.kh = 5;   % Stiffness of the hose (UNITS???)
 
 % Damping
-p.bp = .01;     % Damping of the belt 
-p.bf = 1;     % Viscous friction
+p.bp = .001;     % Damping of the belt 
+p.bf = 1; %547;     % Viscous friction
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
