@@ -12,8 +12,8 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
 
     % Running time
     t_start = 0;
-    t_end = 3;
-    dt = 0.01;
+    t_end = 10;
+    dt = 0.05;
 
     t_vec = t_start:dt:t_end;
     X_vec = zeros(length(X0), length(t_vec));
@@ -23,12 +23,15 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
     options = odeset(...
         'RelTol', 1e-9, ...
         'AbsTol', 1e-9);
+    
+    % Bind dynamics function
+    dynamics_fun = @(t,X)dyn(t,X,p);
 
     while t_start < t_end
         % Simulate the dynamics over a time interval
         % Kept framework for hybrid dynamics
 %         if p.state == 1
-            sol = ode45(dyn, [t_start,t_end], X0, options);
+            sol = ode45(dynamics_fun, [t_start,t_end], X0, options);
 %             disp('Contact! at t = ')
 %             disp(sol.x(end))
 %             p.state = 0;
@@ -46,7 +49,7 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
         t_start = sol.x(end);
         % Set the initial conditions to the end of the last run
         if t_start == t_end
-            X0 = [0 0 0 0];
+            X0 = [0 0 0 0 0 0 0 0];
         else
             X0 = sol.ye(:,end);
         end
@@ -70,32 +73,36 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
 
 end % simRDHT
 
-function dX = unconnecteddynamics(t,X,p)
+function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    
-    theta1  = X(1); dtheta1 = X(2); % Angle & Vel of Input Pulley
-    x1 = X(3); dx1 = X(4); % Pos & Vel of Piston and Water 1
-    x2 = X(5); dx2 = X(6); % Pos & Vel of Piston and Water 2
-    theta2 = X(7); dtheta2 = X(8); % Ouput Angle and Velocity
+    Tau_in = 5*sin(t);
     
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
-    M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2
+    M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
     kpaOVA1  = p.kp*p.a/p.A1;
     bpaOVA1  = p.bp*p.a/p.A1;
     kpaOVA2  = p.kp*p.a/p.A2;
     bpaOVA2  = p.bp*p.a/p.A2;
 
-    A = [0                 1                   0                           0                           0                           0                           0                   0; ...
-        p.kp/p.Ip           p.bp/p.Ip           -p.kp/(p.r*p.Ip)            -p.bp/(p.r*p.Ip)            0                           0                           0                   0; ...
+%     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
+%         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
+%         0                   0                   0                           1                           0                           0                           0                   0; ...
+%         kpaOVA1*p.r/M1     bpaOVA1*p.r/M1     (-kpaOVA1-p.kh*p.A1/p.a)/M1  (-bpaOVA1-p.bf*p.A1/p.a)/M1  p.kh*p.A2/(p.a*M1)         0                           0                   0; ...
+%         0                   0                   0                           0                           0                           1                           0                   0; ...
+%         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
+%         0                   0                   0                           0                           0                           0                           0                   1; ...
+%         0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
+     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
+        -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
         0                   0                   0                           1                           0                           0                           0                   0; ...
-        -kpaOVA1*p.r/M1     -bpaOVA1*p.r/M1     (kpaOVA1+p.kh*p.A1/p.a)/M1  (bpaOVA1-p.bf*p.A1/p.a)/M1  -p.kh*p.A2/(p.a*M1)         0                           0                   0; ...
+       0                       0                   0; ...
         0                   0                   0                           0                           0                           1                           0                   0; ...
-        0                   0                   -p.kh*p.A1/(p.a*M1)         0                           (kpaOVA2+p.kh*p.A2/p.a)/M2  (bpaOVA2-p.bf*p.A1/p.a)/M2  -kpaOVA2*p.r/M2     -bpaOVA2*p.r/M2; ...
+        0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
-        0                   0                   0                           0                           -p.kp/(p.r*p.Ip)            -p.bp/(p.r*p.Ip)            p.kp/p.Ip           p.bp/p.Ip]
-    dX = A*X + [
+        0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
+    dX = A*X + [0; Tau_in; 0; 0; 0; 0; 0; 0];
 end % dynamics
 
 %% Hybrid functions
@@ -135,20 +142,20 @@ end % dynamics
 % end
 % 
 % function [eventVal, isterminal, direction] = liftoffSpringEvent(t,X,p)
-% halting event function for ODE simulation. Events are distance to
-    % ceiling and distance to paddle
-    % Inputs
-    % t: time, X: the state, p: parameters structure
-    % Outputs
-    % eventVal: Vector of event functions that halt at zero crossings
-    % isterminal: if the simulation should halt (yes for both)
-    % direction: which direction of crossing should the sim halt (positive)
-    y_act  = X(1); % Position of actuator
-    y_load = X(2); % Position of load
-    dy_act = X(3); % Velocity of actuator
-    dy_load = X(4); % Velocity of load
-   
-    eventVal =  - p.k*(y_load-y_act) - p.c*(dy_load-dy_act);   % when force from spring and damper = 0...
-    isterminal = 1;     % stops the sim
-    direction = -1;      % doesn't matter which direction
-end
+% % halting event function for ODE simulation. Events are distance to
+%     % ceiling and distance to paddle
+%     % Inputs
+%     % t: time, X: the state, p: parameters structure
+%     % Outputs
+%     % eventVal: Vector of event functions that halt at zero crossings
+%     % isterminal: if the simulation should halt (yes for both)
+%     % direction: which direction of crossing should the sim halt (positive)
+%     y_act  = X(1); % Position of actuator
+%     y_load = X(2); % Position of load
+%     dy_act = X(3); % Velocity of actuator
+%     dy_load = X(4); % Velocity of load
+%    
+%     eventVal =  - p.k*(y_load-y_act) - p.c*(dy_load-dy_act);   % when force from spring and damper = 0...
+%     isterminal = 1;     % stops the sim
+%     direction = -1;      % doesn't matter which direction
+% end
