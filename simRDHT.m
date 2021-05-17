@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHT(X0,p) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 10;
+    t_end = 6;
     dt = 0.1;
 
     t_vec = t_start:dt:t_end;
@@ -21,8 +21,8 @@ function [t_vec, X_vec] = simRDHT(X0,p) %  sol_set, mask]
 
     % Simulation tolerances
     options = odeset(...
-        'RelTol', 1e-9, ...
-        'AbsTol', 1e-9);
+        'RelTol', 1e-6, ...
+        'AbsTol', 1e-6);
     
     % Bind dynamics function
     dynamics_fun = @(t,X)dyn(t,X,p);
@@ -78,7 +78,7 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = .25*cos(t);
+    Tau_in = .5*cos(t);
 %     Tau_in = 0;
     
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -87,11 +87,20 @@ function dX = dyn(t,X,p)
     bpaOVA1  = p.bp*p.a/p.A1;
     kpaOVA2  = p.kp*p.a/p.A2;
     bpaOVA2  = p.bp*p.a/p.A2;
+    
+    if abs(X(3)) > p.strokelim
+        k = 50;
+        b = 10;
+    else
+        k = 0;
+        b = 0;
+    end
+   
 
     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
         0                   0                   0                           1                           0                           0                           0                   0; ...
-        kpaOVA1*p.r/M1     bpaOVA1*p.r/M1     (-kpaOVA1-p.kh*p.A1/p.a)/M1  (-bpaOVA1-p.bf*p.A1/p.a)/M1  p.kh*p.A2/(p.a*M1)         0                           0                   0; ...
+        kpaOVA1*p.r/M1     bpaOVA1*p.r/M1     (-kpaOVA1-p.kh*p.A1/p.a-k)/M1  (-bpaOVA1-p.bf*p.A1/p.a-b)/M1  p.kh*p.A2/(p.a*M1)         0                           0                   0; ...
         0                   0                   0                           0                           0                           1                           0                   0; ...
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
@@ -106,6 +115,14 @@ function dX = dyn(t,X,p)
 %         0                   0                   0                           0                           0                           0                           0                   0];
     dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
 end % dynamics
+
+function k = pistonLimitSpring(x, p)
+    if abs(x) > p.strokelim
+        k = 10;
+    else
+        k = 0;
+    end
+end
 
 %% Hybrid functions
 % function dX = connecteddynamics(t,X,p,ctlr_fun)
