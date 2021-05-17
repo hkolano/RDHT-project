@@ -33,7 +33,7 @@ p.kp = 10000; % Stiffness of the belt N/m (from paper sources)
 p.kh = 5;   % Stiffness of the hose (UNITS???)
 
 % Damping
-p.bp = .001;     % Damping of the belt 
+p.bp = .1;     % Damping of the belt 
 p.bf = 1; %547;     % Viscous friction
 
 %% Simulate the system
@@ -49,6 +49,8 @@ hold on
 plot(t_vec, X_vec(:,7))
 % plot(t_vec, 5*sin(t_vec))
 legend('Theta1', 'Theta2')
+xlabel('Time (s)')
+ylabel('Radians')
 title('Angular Displacement')
 
 % figure
@@ -60,6 +62,8 @@ plot(t_vec, X_vec(:,3))
 hold on
 plot(t_vec, X_vec(:,5))
 legend('x1', 'x2')
+xlabel('Time (s)')
+ylabel('Displacement (m)')
 title('Piston Displacement')
 % 
 % figure
