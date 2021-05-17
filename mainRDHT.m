@@ -29,33 +29,48 @@ p.mw = 0.1;   % Total mass of the water
 p.mw2 = p.mw/2;   % Mass of half the water
 
 % Stiffnesses
-p.kp = 100000; % Stiffness of the belt N/m (from paper sources)
+p.kp = 10000; % Stiffness of the belt N/m (from paper sources)
 p.kh = 5;   % Stiffness of the hose (UNITS???)
 p.kp = 50; % Stiffness of the belt (UNITS???)
 p.kh = 1;   % Stiffness of the hose (UNITS???)
 
 % Damping
-p.bp = .001;     % Damping of the belt 
+p.bp = .1;     % Damping of the belt
 p.bf = 1; %547;     % Viscous friction
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
 
-[t_vec, X_vec, ~, mask] = simRDHT(X0,p);
+[t_vec, X_vec] = simRDHT(X0,p);
 
 %% Plotting
 figure
-plot(t_vec, X_vec(1,:))
+% plot(t_vec, X_vec(1,:))
+plot(t_vec, X_vec(:,1));
 hold on
-plot(t_vec, X_vec(7,:))
+plot(t_vec, X_vec(:,7))
 % plot(t_vec, 5*sin(t_vec))
-legend('Theta1', 'Theta2', 'Force input')
+legend('Theta1', 'Theta2')
+xlabel('Time (s)')
+ylabel('Radians')
+title('Angular Displacement')
+
+% figure
+% plot(t_vec, X_vec(:,2));
+% legend('D Theta 1')
 
 figure
-plot(t_vec, X_vec(3,:))
+plot(t_vec, X_vec(:,3))
 hold on
-plot(t_vec, X_vec(5,:))
+plot(t_vec, X_vec(:,5))
 legend('x1', 'x2')
+xlabel('Time (s)')
+ylabel('Displacement (m)')
+title('Piston Displacement')
+%
+% figure
+% plot(t_vec, X_vec(:,4))
+% legend('dx1')
 
 %Animate the mass
 exportVideo = false;

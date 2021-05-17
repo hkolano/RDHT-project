@@ -1,4 +1,4 @@
-function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
+function [t_vec, X_vec] = simRDHT(X0,p) %  sol_set, mask] 
     %{ 
     Simulation script for RDHT simulation
 
@@ -12,8 +12,8 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
 
     % Running time
     t_start = 0;
-    t_end = 20;
-    dt = 0.05;
+    t_end = 10;
+    dt = 0.1;
 
     t_vec = t_start:dt:t_end;
     X_vec = zeros(length(X0), length(t_vec));
@@ -26,12 +26,13 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
     
     % Bind dynamics function
     dynamics_fun = @(t,X)dyn(t,X,p);
+   
 
-    while t_start < t_end
+%     while t_start < t_end
         % Simulate the dynamics over a time interval
         % Kept framework for hybrid dynamics
 %         if p.state == 1
-            sol = ode45(dynamics_fun, [t_start,t_end], X0, options);
+      [t_vec, X_vec] = ode45(dynamics_fun, [t_start,t_end], X0, options);
 %             disp('Contact! at t = ')
 %             disp(sol.x(end))
 %             p.state = 0;
@@ -43,33 +44,33 @@ function [t_vec, X_vec, sol_set, mask] = simRDHT(X0,p)
 %         end
 
         % Concatenate solution sets
-        sol_set = [sol_set, {sol}];
-        % Setup t_start for the next ode45 call so it is at the end of the 
-        % last call 
-        t_start = sol.x(end);
-        % Set the initial conditions to the end of the last run
-        if t_start == t_end
-            X0 = [0 0 0 0 0 0 0 0];
-        else
-            X0 = sol.ye(:,end);
-        end
-    end
-    
-    % Loop to sample the solution structures and built X_vec
-    mask = zeros(1,length(t_vec));
-    for idx = 1:length(sol_set)
-        % This sets up a logical vector so we can perform logical indexing
-        t_sample_mask = t_vec >= sol_set{idx}.x(1) & t_vec <= sol_set{idx}.x(end);
-        % Evaluate the idx solution structure only at the applicable times
-        X_eval = deval(sol_set{idx}, t_vec(t_sample_mask));
-        % Assign the result to the correct indicies of the return state array
-        X_vec(:,t_sample_mask) = X_eval;
-        
-        if rem(idx,2) == 0
-            mask(t_sample_mask) = t_sample_mask(t_sample_mask);
-        end
-    end
-    mask = logical(mask);
+%         sol_set = [sol_set, {sol}];
+%         % Setup t_start for the next ode45 call so it is at the end of the 
+%         % last call 
+%         t_start = sol.x(end);
+%         % Set the initial conditions to the end of the last run
+%         if t_start == t_end
+%             X0 = [0 0 0 0 0 0 0 0];
+%         else
+%             X0 = sol.ye(:,end);
+%         end
+%     end
+%     
+%     % Loop to sample the solution structures and built X_vec
+%     mask = zeros(1,length(t_vec));
+%     for idx = 1:length(sol_set)
+%         % This sets up a logical vector so we can perform logical indexing
+%         t_sample_mask = t_vec >= sol_set{idx}.x(1) & t_vec <= sol_set{idx}.x(end);
+%         % Evaluate the idx solution structure only at the applicable times
+%         X_eval = deval(sol_set{idx}, t_vec(t_sample_mask));
+%         % Assign the result to the correct indicies of the return state array
+%         X_vec(:,t_sample_mask) = X_eval;
+%         
+%         if rem(idx,2) == 0
+%             mask(t_sample_mask) = t_sample_mask(t_sample_mask);
+%         end
+%     end
+%     mask = logical(mask);
 
 end % simRDHT
 
@@ -77,7 +78,8 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = 5*sin(t);
+    Tau_in = .25*cos(t);
+%     Tau_in = 0;
     
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -95,14 +97,14 @@ function dX = dyn(t,X,p)
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
 %      A = [0                 1                   0                           0                           0                           0                           0                   0; ...
-%         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                            0                   0; ...
-%         0                   0                   0                           1                           0                           0                           0                   0; ...
-%         p.kp*p.r/p.mpd      p.bp*p.r/p.mpd      -p.kp/p.mpd                 -p.bp/p.mpd                 0                           0                           0                   0; ...
+%         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip     p.bp*p.r/p.Ip               0                           0                            0                   0; ...
+%         0                   0                   0                  1                           0                           0                           0                   0; ...
+%         p.kp*p.r/p.mpd      p.bp*p.r/p.mpd      -p.kp/p.mpd        -p.bp/p.mpd                 0                           0                           0                   0; ...
 %         0                   0                   0                           0                           0                           1                           0                   0; ...
 %         0                   0                   0                           0                           0                           0                           0                   0; ...
 %         0                   0                   0                           0                           0                           0                           0                   1; ...
 %         0                   0                   0                           0                           0                           0                           0                   0];
-    dX = A*X + [0; Tau_in; 0; 0; 0; 0; 0; 0];
+    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
 end % dynamics
 
 %% Hybrid functions
