@@ -31,6 +31,8 @@ p.mw2 = p.mw/2;   % Mass of half the water
 % Stiffnesses
 p.kp = 100000; % Stiffness of the belt N/m (from paper sources)
 p.kh = 5;   % Stiffness of the hose (UNITS???)
+p.kp = 50; % Stiffness of the belt (UNITS???)
+p.kh = 1;   % Stiffness of the hose (UNITS???)
 
 % Damping
 p.bp = .001;     % Damping of the belt 
@@ -58,4 +60,18 @@ legend('x1', 'x2')
 %Animate the mass
 exportVideo = false;
 playbackRate = .5;
+figure
+plot(t_vec,X_vec(1,:),'g')
+hold on
+% plot(t_vec,X_vec(2,:),'-g')
+% plot(t_vec,X_vec(3,:),'b')
+% plot(t_vec,X_vec(4,:),'-b')
+% plot(t_vec,X_vec(5,:),'r')
+% plot(t_vec,X_vec(6,:),'-r')
+% plot(t_vec,X_vec(7,:),'y')
+% plot(t_vec,X_vec(8,:),'-y')
+
+%Animate
+exportVideo = false;
+playbackRate = 1;
 RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
