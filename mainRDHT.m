@@ -83,6 +83,6 @@ title('Piston Displacement')
 % plot(t_vec,X_vec(8,:),'-y')
 
 %Animate
-exportVideo = false;
-playbackRate = 1;
-RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
+% exportVideo = false;
+% playbackRate = 1;
+% RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
