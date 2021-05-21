@@ -70,6 +70,12 @@ title('Piston Displacement')
 % plot(t_vec, X_vec(:,4))
 % legend('dx1')
 
+figure
+
+plot(t_vec, X_vec(:,7)-X_vec(:,1))
+xlabel('Time (s)')
+ylabel('Position error (m)')
+title('Input-Output shaft')
 %Animate the mass
 % figure
 % plot(t_vec,X_vec(:,1),'g')
