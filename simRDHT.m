@@ -116,16 +116,6 @@ function dX = dyn(t,X,p)
     dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
 end % dynamics
 
-function k = pistonLimitSpring(x, p)
-    if x > p.strokelim
-        k = 100000;
-    elseif x < -p.strokelim
-        k = -100000;
-    else
-        k = 0;
-    end
-end
-
 %% Hybrid functions
 % function dX = connecteddynamics(t,X,p,ctlr_fun)
 %     % t == time

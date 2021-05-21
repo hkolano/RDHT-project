@@ -1,10 +1,10 @@
 %{
-ROB 542: Actuator Dyamics, Assignment 5
+ROB 542: Actuator Dyamics, Assignment 5 & 6
 
 Rolling Diaphragm Hydrostatic Transmission simulation
 
 Main code
-Last modified by Hannah Kolano 5/13/21
+Last modified by Hannah Kolano 5/20/21
 %}
 
 close all
@@ -29,7 +29,7 @@ p.mw = 0.1;   % Total mass of the water
 p.mw2 = p.mw/2;   % Mass of half the water
 
 % Stiffnesses
-p.kp = 10000; % Stiffness of the belt N/m (from paper sources)
+p.kp = 2014000; % Stiffness of the belt N/m 
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
@@ -76,17 +76,6 @@ plot(t_vec, X_vec(:,7)-X_vec(:,1))
 xlabel('Time (s)')
 ylabel('Position error (m)')
 title('Input-Output shaft')
-%Animate the mass
-% figure
-% plot(t_vec,X_vec(:,1),'g')
-% hold on
-% plot(t_vec,X_vec(2,:),'-g')
-% plot(t_vec,X_vec(3,:),'b')
-% plot(t_vec,X_vec(4,:),'-b')
-% plot(t_vec,X_vec(5,:),'r')
-% plot(t_vec,X_vec(6,:),'-r')
-% plot(t_vec,X_vec(7,:),'y')
-% plot(t_vec,X_vec(8,:),'-y')
 
 %Animate
 % exportVideo = false;
