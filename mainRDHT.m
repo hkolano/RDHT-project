@@ -7,7 +7,7 @@ Main code
 Last modified by Hannah Kolano 5/13/21
 %}
 
-close all
+clear all
 
 %% Set up parameters
 
