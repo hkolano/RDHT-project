@@ -7,7 +7,7 @@ Main code
 Last modified by Hannah Kolano 5/20/21
 %}
 
-clear all
+close all
 
 %% Set up parameters
 
@@ -36,10 +36,26 @@ p.kh = 1573;   % Stiffness of the hose N/m of y1
 p.bp = .5;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
+% External disturbance
+p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
+p.dist_freq = 0.25; % Frequency of disturbance, Hz
+
+traj_fun = @(t) disturbanceTrajectory(p.dist_amp, p.dist_freq, t);
+
+% Set up controller
+c.Kp = 10000;
+c.Kd = 100;
+tau_des = .1;
+
+% set up controller
+% ctlr_fun = @(t,t_last,X,X_last) ctlrRDHTforce(t,t_last,X,X_last,c,p,tau_des);
+ctlr_fun = @(t,X) ctlrRDHTforce2(t,X,c,p,tau_des);
+
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
 
-[t_vec, X_vec] = simRDHT(X0,p);
+[t_vec, X_vec] = simRDHTforceControl(X0,p, traj_fun, ctlr_fun);
+
 
 %% Plotting
 figure
@@ -70,14 +86,15 @@ title('Piston Displacement')
 % plot(t_vec, X_vec(:,4))
 % legend('dx1')
 
-figure
-
-plot(t_vec, X_vec(:,7)-X_vec(:,1))
-xlabel('Time (s)')
-ylabel('Position error (m)')
-title('Input-Output shaft')
+% figure
+% 
+% plot(t_vec, X_vec(:,7)-X_vec(:,1))
+% xlabel('Time (s)')
+% ylabel('Position error (rad)')
+% title('Input-Output shaft')
 
 %Animate
 % exportVideo = false;
 % playbackRate = 1;
 % RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
+
