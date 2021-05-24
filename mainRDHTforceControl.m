@@ -3,8 +3,8 @@ ROB 542: Actuator Dyamics, Assignment 5 & 6
 
 Rolling Diaphragm Hydrostatic Transmission simulation
 
-Runs with fixed ouput sim function 
-Last modified by Hannah Kolano 5/23/21
+Main code
+Last modified by Hannah Kolano 5/20/21
 %}
 
 close all
@@ -36,65 +36,65 @@ p.kh = 1573;   % Stiffness of the hose N/m of y1
 p.bp = .5;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
-% Sinusoidal input
-p.tamp = 0.5;
-p.freq = 2*pi;
+% External disturbance
+p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
+p.dist_freq = 0.25; % Frequency of disturbance, Hz
+
+traj_fun = @(t) disturbanceTrajectory(p.dist_amp, p.dist_freq, t);
+
+% Set up controller
+c.Kp = 10000;
+c.Kd = 100;
+tau_des = .1;
+
+% set up controller
+% ctlr_fun = @(t,t_last,X,X_last) ctlrRDHTforce(t,t_last,X,X_last,c,p,tau_des);
+ctlr_fun = @(t,X) ctlrRDHTforce2(t,X,c,p,tau_des);
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
 
-[t_vec, X_vec] = simRDHTfixedOutput(X0,p);
+[t_vec, X_vec] = simRDHTforceControl(X0,p, traj_fun, ctlr_fun);
+
 
 %% Plotting
+figure
+% plot(t_vec, X_vec(1,:))
+plot(t_vec, X_vec(:,1));
+hold on
+plot(t_vec, X_vec(:,7))
+% plot(t_vec, 5*sin(t_vec))
+legend('Theta1', 'Theta2')
+xlabel('Time (s)')
+ylabel('Radians')
+title('Angular Displacement')
 
-f_on_output =  [0  0  0  0  p.kp*p.r/p.Ip   p.bp*p.r/p.Ip   -p.kp*p.r^2/p.Ip   -p.bp*p.r^2/p.Ip]*X_vec.';
+% figure
+% plot(t_vec, X_vec(:,2));
+% legend('D Theta 1')
 
 figure
-plot(t_vec, p.tamp*cos(p.freq.*t_vec))
+plot(t_vec, X_vec(:,3))
 hold on
-plot(t_vec, f_on_output*p.Ip)
+plot(t_vec, X_vec(:,5))
+legend('x1', 'x2')
 xlabel('Time (s)')
-ylabel('Torque (Nm)')
-legend('Input', 'Output')
+ylabel('Displacement (m)')
+title('Piston Displacement')
+%
+% figure
+% plot(t_vec, X_vec(:,4))
+% legend('dx1')
 
-% plot_angles(t_vec, X_vec(:,1), X_vec(:,7));
+% figure
 % 
-% plot_angle_error(t_vec, X_vec(:,1), X_vec(:,7));
-% 
-% plot_pistons(t_vec, X_vec(:,3), X_vec(:,5));
+% plot(t_vec, X_vec(:,7)-X_vec(:,1))
+% xlabel('Time (s)')
+% ylabel('Position error (rad)')
+% title('Input-Output shaft')
 
 %Animate
 % exportVideo = false;
 % playbackRate = 1;
 % RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
 
-%% Plotting functions
-function plot_angles(t, ang1, ang2)
-    figure
-    plot(t, ang1);
-    hold on
-    plot(t, ang2)
-    legend('Theta1', 'Theta2')
-    xlabel('Time (s)')
-    ylabel('Radians')
-    title('Angular Displacement')
-end
-
-function plot_pistons(t, pist1, pist2)
-    figure
-    plot(t, pist1)
-    hold on
-    plot(t, pist2)
-    legend('x1', 'x2')
-    xlabel('Time (s)')
-    ylabel('Displacement (m)')
-    title('Piston Displacement')
-end
-
-function plot_angle_error(t, ang1, ang2)
-    figure
-    plot(t, ang2-ang1)
-    xlabel('Time (s)')
-    ylabel('Angular error (rad)')
-    title('Input-Output shaft')
-end
