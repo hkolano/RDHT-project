@@ -1,4 +1,4 @@
-function RDHTAnimation(p,t,X,exportVideo,playbackRate)
+function RDHTAnimationPosCon(p,t,X,exportVideo,playbackRate)
 % For SE3
 
 FPS=60;
@@ -253,7 +253,9 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_aR*cos(input)],[pulley_aCy pulley_aCy+pulley_aR*sin(input)],'b','LineWidth',4);
     plt(20)=plot([pulley_bCx pulley_bCx+pulley_bR*cos(output)],[pulley_bCy pulley_bCy+pulley_bR*sin(output)],'b','LineWidth',4);
+    %%%% ploting the needle
     
+    plt(21)=plot([pulley_bCx+pulley_bR*cos(output) pulley_bCx+pulley_bR*cos(output)+(2.5^2-(pulley_bCy+pulley_bR*sin(output)^2))^(1/2)],[pulley_bCy+pulley_bR*sin(output) 2],'b','LineWidth',4)
 
 %
 %     piston_La.updatePlotData

@@ -1,10 +1,10 @@
 %{
-ROB 542: Actuator Dyamics, Assignment 5
+ROB 542: Actuator Dyamics, Assignment 5 & 6
 
 Rolling Diaphragm Hydrostatic Transmission simulation
 
 Main code
-Last modified by Hannah Kolano 5/13/21
+Last modified by Hannah Kolano 5/20/21
 %}
 
 clear all
@@ -27,9 +27,9 @@ p.Ip = 0.5*mp*p.r^2;   % pulley inertia
 p.mpd = 0.05;  % Piston and diaphragm mass, kg
 p.mw = 0.1;   % Total mass of the water
 p.mw2 = p.mw/2;   % Mass of half the water
-p.w=1;
+
 % Stiffnesses
-p.kp = 10000; % Stiffness of the belt N/m (from paper sources)
+p.kp = 2014000; % Stiffness of the belt N/m 
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
@@ -38,8 +38,19 @@ p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
+p.dist_amp = 4500; % Amplitude of disturbance: ~30 degrees
+p.dist_freq = 2; % Frequency of disturbance, Hz
+traj_fun = @(t) disTrajPosition(p.dist_amp, p.dist_freq, t);% External disturbance
+% Set up controller
+c.Kp = 10000;
+c.Kd = 100;
+tau_des = .1;
 
-[t_vec, X_vec] = simRDHT(X0,p);
+% set up controller
+% ctlr_fun = @(t,t_last,X,X_last) ctlrRDHTforce(t,t_last,X,X_last,c,p,tau_des);
+ctlr_fun = @(t,X) ctlrRDHTPosition(t,X,p,c);
+
+[t_vec, X_vec] = simPositionControlRDHT(X0,p,c, traj_fun, ctlr_fun);
 
 %% Plotting
 figure
@@ -76,32 +87,8 @@ plot(t_vec, X_vec(:,7)-X_vec(:,1))
 xlabel('Time (s)')
 ylabel('Position error (m)')
 title('Input-Output shaft')
-figure
-hold on
-%% bode plot
-for i=1:50
-p.w=i;
-[t_vec, X_vec] = simRDHT(X0,p);
 
-<<<<<<< Updated upstream
-for i=1:length(t_vec)
-f_out(i)=p.kp*p.r*X_vec(i,5)+p.bp*p.r*X_vec(i,6)-p.kp*p.r^2*X_vec(i,7)-p.bp*p.r^2*X_vec(i,8);
-f_in(i)=-p.kp*p.r^2*X_vec(i,1)-p.bp*p.r^2*X_vec(i,2)+p.kp*p.r*X_vec(i,3)+p.bp*p.r*X_vec(i,4);
-
-f(i)=f_out(i)/f_in(i);
-end
-g=mean(f);
-plot(p.w,g,'ob')
-ylim([-2 2])
-title('bode plot')
-end
-%Animate
-% exportVideo = false;
-% playbackRate = 1;
-% RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
-=======
-
+% 
 exportVideo = false;
 playbackRate = 1;
-RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
->>>>>>> Stashed changes
+RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
