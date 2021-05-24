@@ -87,10 +87,10 @@ for i=1:length(t_vec)
 f_out(i)=p.kp*p.r*X_vec(i,5)+p.bp*p.r*X_vec(i,6)-p.kp*p.r^2*X_vec(i,7)-p.bp*p.r^2*X_vec(i,8);
 f_in(i)=-p.kp*p.r^2*X_vec(i,1)-p.bp*p.r^2*X_vec(i,2)+p.kp*p.r*X_vec(i,3)+p.bp*p.r*X_vec(i,4);
 
-f(i)=f_in(i)/.5*cos(p.w*t_vec(i));
+f(i)=f_out(i)/f_in(i);
 end
 g=mean(f);
-plot(p.w,g,'-b')
+plot(p.w,g,'ob')
 ylim([-2 2])
 title('bode plot')
 end
