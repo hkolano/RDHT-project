@@ -194,6 +194,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     end
 
     fill(pulley_ax,pulley_ay,[1,1,.5])
+    plot([-1 8],[0 0]);
     %% inner piston that moves
     pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]))
     pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]))

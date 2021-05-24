@@ -1,6 +1,7 @@
-function [t_vec, X_vec] = simRDHT(X0,p) %  sol_set, mask] 
+function [t_vec, X_vec] = simRDHTfixedOutput(X0,p) %  sol_set, mask] 
     %{
     Simulation script for RDHT simulation
+    Doesn't allow the output shaft to turn
 
     Inputs:
         X0: vector of initial conditions
@@ -78,7 +79,7 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = .5*cos(t);
+    Tau_in = p.tamp*cos(p.freq*t);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -104,28 +105,10 @@ function dX = dyn(t,X,p)
         0                   0                   0                           0                           0                           1                           0                   0; ...
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
-        0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
-%      A = [0                 1                   0                           0                           0                           0                           0                   0; ...
-%         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip     p.bp*p.r/p.Ip               0                           0                            0                   0; ...
-%         0                   0                   0                  1                           0                           0                           0                   0; ...
-%         p.kp*p.r/p.mpd      p.bp*p.r/p.mpd      -p.kp/p.mpd        -p.bp/p.mpd                 0                           0                           0                   0; ...
-%         0                   0                   0                           0                           0                           1                           0                   0; ...
-%         0                   0                   0                           0                           0                           0                           0                   0; ...
-%         0                   0                   0                           0                           0                           0                           0                   1; ...
-%         0                   0                   0                           0                           0                           0                           0                   0];
+        0                   0                   0                           0                           0                           0                           0                   0];
+%         0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
     dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
 end % dynamics
-
-function k = pistonLimitSpring(x, p)
-    if x > p.strokelim
-        k = 100000;
-    elseif x < -p.strokelim
-        k = -100000;
-    else
-        k = 0;
-    end
-end
-
 
 %% Hybrid functions
 % function dX = connecteddynamics(t,X,p,ctlr_fun)

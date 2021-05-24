@@ -1,13 +1,11 @@
 %{
 ROB 542: Actuator Dyamics, Assignment 5 & 6
-
 Rolling Diaphragm Hydrostatic Transmission simulation
-
 Main code
 Last modified by Hannah Kolano 5/20/21
 %}
 
-clear all
+close all
 
 %% Set up parameters
 
@@ -20,7 +18,7 @@ p.A1 = (0.024/2)^2*pi; % Area of input piston, in m^2 (this is a little under a 
 p.A2 = (0.024/2)^2*pi; % Area of ouput piston, in m^2
 p.a = (.006/2)^2*pi; % Area of the tube, in m^2
 p.strokelim = 56.8/2/1000; % Stroke length limit (either way from 0)
-freq=1;
+
 % Masses
 mp = 0.05;  % Pulley mass
 p.Ip = 0.5*mp*p.r^2;   % pulley inertia
@@ -36,12 +34,12 @@ p.kh = 1573;   % Stiffness of the hose N/m of y1
 p.bp = .5;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
-%% Simulate the system
-X0 = [0 0 0 0 0 0 0 0];
-p.dist_amp = 4500; % Amplitude of disturbance: ~30 degrees
-p.dist_freq = 2; % Frequency of disturbance, Hz
-p.freq=1
-traj_fun = @(t) disTrajPosition(p.dist_amp, p.dist_freq, t);% External disturbance
+% External disturbance
+p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
+p.dist_freq = 0.25; % Frequency of disturbance, Hz
+
+traj_fun = @(t) disturbanceTrajectory(p.dist_amp, p.dist_freq, t);
+
 % Set up controller
 c.Kp = 10000;
 c.Kd = 100;
@@ -49,9 +47,13 @@ tau_des = .1;
 
 % set up controller
 % ctlr_fun = @(t,t_last,X,X_last) ctlrRDHTforce(t,t_last,X,X_last,c,p,tau_des);
-ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
+ctlr_fun = @(t,X) ctlrRDHTforce2(t,X,c,p,tau_des);
 
-[t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
+%% Simulate the system
+X0 = [0 0 0 0 0 0 0 0];
+
+[t_vec, X_vec] = simRDHTforceControl(X0,p, traj_fun, ctlr_fun);
+
 
 %% Plotting
 figure
@@ -82,34 +84,14 @@ title('Piston Displacement')
 % plot(t_vec, X_vec(:,4))
 % legend('dx1')
 
-figure
-
-plot(t_vec, X_vec(:,7)-X_vec(:,1))
-xlabel('Time (s)')
-ylabel('Position error (m)')
-title('Input-Output shaft')
-
-exportVideo = 1;
-playbackRate = 1;
-RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
-
-figure
-for i=1:50
-    freq=i;
-    [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
- amp=.5;
-y = amp*cos(freq*2*pi.*t_vec);
-
-   output_amp = peak2peak(X_vec(7,:));
-   input_amp = peak2peak(y/2);
-   ratio(i) = output_amp/input_amp;
-    hold on
-    plot(freq,ratio,'md')
-    ylim([-2 2])
-end
-xlabel('Frequency (Hz)')
-ylabel('Amplitude Ratio')
-title('bode plot')
-
+% figure
 % 
+% plot(t_vec, X_vec(:,7)-X_vec(:,1))
+% xlabel('Time (s)')
+% ylabel('Position error (rad)')
+% title('Input-Output shaft')
 
+%Animate
+% exportVideo = false;
+% playbackRate = 1;
+% RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
