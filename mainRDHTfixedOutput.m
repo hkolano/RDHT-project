@@ -57,6 +57,33 @@ xlabel('Time (s)')
 ylabel('Torque (Nm)')
 legend('Input', 'Output')
 
+figure
+hold on
+input_amp = 1;
+
+%% Sweep
+for i=1:45
+    p.freq=i*2*pi;
+    [t_vec, X_vec] = simRDHTfixedOutput(X0,p);
+
+%     for j=1:length(t_vec)
+%         f_out(j)=p.kp*p.r*X_vec(j,5)+p.bp*p.r*X_vec(j,6)-p.kp*p.r^2*X_vec(j,7)-p.bp*p.r^2*X_vec(j,8);
+%         f_in(j)=-p.kp*p.r^2*X_vec(j,1)-p.bp*p.r^2*X_vec(j,2)+p.kp*p.r*X_vec(j,3)+p.bp*p.r*X_vec(j,4);
+%    f_in = p.tamp*cos(p.freq.*t_vec);
+   f_out = [0  0   0   0   p.kp*p.r/p.Ip   p.bp*p.r/p.Ip   -p.kp*p.r^2/p.Ip   -p.bp*p.r^2/p.Ip]*X_vec'.*p.Ip;
+%         f(j)=f_out(j)/f_in(j);
+%     end
+   output_amp = peak2peak(f_out(floor(length(f_on_output)/4):end))
+   torque_ratio = output_amp/input_amp;
+%     g=mean(f);
+    hold on
+    plot(p.freq/(2*pi),torque_ratio,'md')
+%     ylim([-2 2])
+end
+xlabel('Frequency (Hz)')
+ylabel('Amplitude Ratio')
+title('bode plot')
+
 % plot_angles(t_vec, X_vec(:,1), X_vec(:,7));
 % 
 % plot_angle_error(t_vec, X_vec(:,1), X_vec(:,7));
