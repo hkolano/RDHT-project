@@ -11,12 +11,12 @@ function [t_vec, X_vec] = simRDHTforceControl(X0,p, traj_fun, ctlr_fun) %  sol_s
     Modified: Hannah Kolano 2021
     %}
 
-    p.X_last = X0';
-    p.t_last = 0;
+%     p.X_last = X0';
+%     p.t_last = 0;
 
     % Running time
     t_start = 0;
-    t_end = 6;
+    t_end = 3;
     dt = 0.1;
 
     t_vec = t_start:dt:t_end;
@@ -51,21 +51,26 @@ function dX = dyn(t,X,p,traj_fun,ctlr_fun)
     kpaOVA2  = p.kp*p.a/p.A2;
     bpaOVA2  = p.bp*p.a/p.A2;
 
-    if abs(X(3)) > p.strokelim 
-        k1 = 5000;
-        b1 = 10;
-    else
-        k1 = 0;
-        b1 = 0;
-    end
-    
-    if abs(X(5)) > p.strokelim
-        k2 = 5000;
-        b2 = 10;
-    else
-        k2 = 0;
-        b2 = 0;
-    end
+%     if abs(X(3)) > p.strokelim 
+%         k1 = 5000;
+%         b1 = 10;
+%     else
+%         k1 = 0;
+%         b1 = 0;
+%     end
+%     
+%     if abs(X(5)) > p.strokelim
+%         k2 = 5000;
+%         b2 = 10;
+%     else
+%         k2 = 0;
+%         b2 = 0;
+%     end
+
+    k1 = 0;
+    k2 = 0;
+    b1 = 0;
+    b2 = 0;
 
 
 %     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
@@ -86,6 +91,6 @@ function dX = dyn(t,X,p,traj_fun,ctlr_fun)
             0                   0                   0                           0                           0                           0                           0                   0];
 
     dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; ddy];
-    p.X_last = X;
-    p.t_last = t;
+%     p.X_last = X;
+%     p.t_last = t;
 end % dynamics

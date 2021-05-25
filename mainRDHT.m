@@ -41,6 +41,43 @@ X0 = [0 0 0 0 0 0 0 0];
 
 [t_vec, X_vec] = simRDHT(X0,p);
 
+%%  Sweep
+% frequencies = [0.1 0.2 0.5 1 2 5 10 15 20 22.5 25 27.5 30 35 40 45 50 80 100];
+frequencies = [8];
+n = length(frequencies);
+ratios = [];
+
+for i=1:n
+    p.freq=frequencies(i)*2*pi;
+    [t_vec, X_vec] = simRDHT(X0,p);
+
+   input_pulley_pos = X_vec(:,1);
+   output_pulley_pos = X_vec(:,7);
+   
+   input_amp = peak2peak(input_pulley_pos);
+   output_amp = peak2peak(output_pulley_pos);
+   ratio = output_amp/input_amp
+   ratios(i) = ratio;
+   figure
+    % plot(t_vec, X_vec(1,:))
+    plot(t_vec, X_vec(:,1));
+    hold on
+    plot(t_vec, X_vec(:,7))
+    % plot(t_vec, 5*sin(t_vec))
+    legend('Theta1', 'Theta2')
+    xlabel('Time (s)')
+    ylabel('Radians')
+    title('Angular Displacement')
+end
+
+%% Plot Bode
+db_ratios = mag2db(ratios);
+figure
+semilogx(frequencies, db_ratios, 'LineWidth', 2)
+xlabel('Frequency (Hz)')
+ylabel('Amplitude Ratio (dB)')
+title('Output:Input Ratio')
+
 %% Plotting
 figure
 % plot(t_vec, X_vec(1,:))
