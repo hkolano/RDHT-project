@@ -101,7 +101,8 @@ plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
 
 %%% stationary like to fix the plot
-plot([-1 -1],[0 5]);
+plot([-2 -2],[-2 12]);
+plot([-2 12],[-2 -2]);
 %%%%% the pulley plot which is  stationary
 ph=0:.1:2*pi;
 for i=1:length(ph)
@@ -183,7 +184,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 %     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
 %     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
 %     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
-    ballObj.globalMove(SE3([pulley_bCx+8*pulley_bR, ball_pose, 0]));
+    ballObj.globalMove(SE3([pulley_bCx+7.5*pulley_bR, ball_pose+2, 0]));
 
     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
