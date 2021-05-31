@@ -74,6 +74,8 @@ function dX = dyn(t,X,p,freq,traj_fun,ctlr_fun)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
-  dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; ddy];
+    B=[0; 1/p.Ip; 0; 0; 0; 0; 0; 0];
+    E=[0; 0; 0; 0; 0; 0; 0; ddy];
+    dX = A*X + B*Tau_ctrl+E;
 end % dynamics
 

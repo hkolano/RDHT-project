@@ -25,7 +25,7 @@ function [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun
         'AbsTol', 1e-6);
 
     % Bind dynamics function
-    dynamics_fun = @(t,X)dyn(t,X,p,traj_fun,ctlr_fun);
+    dynamics_fun = @(t,X)dyn(t,X,p,freq,traj_fun,ctlr_fun);
 
 
 %     while t_start < t_end
@@ -39,7 +39,7 @@ function [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun
 
 end % simRDHT
 
-function dX = dyn(t,X,p,traj_fun,ctlr_fun)
+function dX = dyn(t,X,p,freq,traj_fun,ctlr_fun)
     % t == time
     % X == the state
     % p == parameters structure
@@ -47,7 +47,7 @@ function dX = dyn(t,X,p,traj_fun,ctlr_fun)
 %     Tau_in = 0;
     [~, ~, ddy] = traj_fun(t);
 
-    Tau_ctrl = ctlr_fun(t,X);
+    Tau_ctrl = ctlr_fun(t,X,freq);
 %     Tau_ctrl = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -74,6 +74,7 @@ function dX = dyn(t,X,p,traj_fun,ctlr_fun)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/p.Ip            p.bp*p.r/p.Ip                -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip];
-  dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; ddy];
+    B=[0; 1/p.Ip; 0; 0; 0; 0; 0; ddy];
+    dX = A*X + B*[0 Tau_control;
 end % dynamics
 

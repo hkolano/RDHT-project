@@ -1,4 +1,4 @@
-function RDHTAnimationPosCon(p,t,X,exportVideo,playbackRate)
+function RDHTAnimation(p,t,X,exportVideo,playbackRate)
 % For SE3
 
 FPS=60;
@@ -8,6 +8,8 @@ addpath(fullfile(pwd,'..', 'visualization'))
 %% piston for the wall
 piston_wL = .5; %width
 piston_hL = 1; %height
+
+ball_r = 0.1;
 
 piston_LaCx=0; % A and B are input pistons - L (left)
 piston_LaCy=3;
@@ -65,7 +67,7 @@ pistonInner_Lb =CubeClass_A([pistonIn_wL,pistonIn_hL]);
 pistonInner_Ra =CubeClass_A([pistonIn_wR,pistonIn_hR]);
 pistonInner_Rb =CubeClass_A([pistonIn_wR,pistonIn_hR]);
 
-
+ballObj = SphereClass(ball_r);
 % Create a figure handle
 h.figure = figure;
 
@@ -82,6 +84,7 @@ pistonInner_La.plot
 pistonInner_Lb.plot
 pistonInner_Ra.plot
 pistonInner_Rb.plot
+ballObj.plot
 % pulley_aObj.plot
 % pulley_bObj.plot
 
@@ -97,6 +100,8 @@ end
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
 
+%%% stationary like to fix the plot
+plot([-1 -1],[0 5]);
 %%%%% the pulley plot which is  stationary
 ph=0:.1:2*pi;
 for i=1:length(ph)
@@ -120,7 +125,7 @@ zlabel('z Position (m)')
 % h.figure.Children(1).DataAspectRatio = [1 1 1];
 
 if exportVideo
-   v = VideoWriter('PoseControlled.mp4', 'MPEG-4');
+   v = VideoWriter('puckAnimation.mp4', 'MPEG-4');
    v.FrameRate = FPS;
    open(v)
 end
@@ -137,12 +142,13 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
      %% input from the main code
     x_state = interp1(t',X,t_plt);
-    pistonInner_LaCy=x_state(3)*10+3
-    pistonInner_LbCy=-x_state(3)*10+3
-    pistonInner_RaCy=x_state(5)*10+3
-    pistonInner_RbCy=-x_state(5)*10+3
-    input=-x_state(1)
-    output=-x_state(7)
+    pistonInner_LaCy=x_state(3)*10+3;
+    pistonInner_LbCy=-x_state(3)*10+3;
+    pistonInner_RaCy=x_state(5)*10+3;
+    pistonInner_RbCy=-x_state(5)*10+3;
+    ball_pose=x_state(9)*10+3;
+    input=-x_state(1);
+    output=-x_state(7);
 
 
 %     x_state = interp1(t',X',t_plt);
@@ -166,6 +172,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     pistonInner_Lb.resetFrame
     pistonInner_Ra.resetFrame
     pistonInner_Rb.resetFrame
+    ballObj.resetFrame
 %     pulley_aObj.resetFrame
 %     pulley_bObj.resetFrame
 %
@@ -176,6 +183,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 %     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
 %     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
 %     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
+    ballObj.globalMove(SE3([0, ball_pose, 0]));
 
     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
@@ -194,7 +202,6 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     end
 
     fill(pulley_ax,pulley_ay,[1,1,.5])
-    plot([-1 8],[0 0]);
     %% inner piston that moves
     pistonInner_La.globalMove(SE3([pistonInner_LaCx, pistonInner_LaCy, 0]))
     pistonInner_Lb.globalMove(SE3([pistonInner_LbCx, pistonInner_LbCy, 0]))
@@ -253,10 +260,8 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(14)= plot([water_ARx water_ARx],[4.5 water_ARy],'b','LineWidth',6);
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_aR*cos(input)],[pulley_aCy pulley_aCy+pulley_aR*sin(input)],'b','LineWidth',4);
-    plt(20)=plot([pulley_bCx pulley_bCx+pulley_bR*cos(output)],[pulley_bCy pulley_bCy+pulley_bR*sin(output)],'b','LineWidth',4);
-    %%%% ploting the needle
+    plt(20)=plot([pulley_bCx pulley_bCx+5*pulley_bR*cos(output)],[pulley_bCy pulley_bCy+5*pulley_bR*sin(output)],'b','LineWidth',4);
     
-    plt(21)=plot([pulley_bCx+pulley_bR*cos(output) pulley_bCx+pulley_bR*cos(output)+(2.5^2-(pulley_bCy+pulley_bR*sin(output)^2))^(1/2)],[pulley_bCy+pulley_bR*sin(output) 2],'b','LineWidth',4)
 
 %
 %     piston_La.updatePlotData

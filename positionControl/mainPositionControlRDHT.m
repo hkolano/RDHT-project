@@ -33,7 +33,7 @@ p.kp = 2014000; % Stiffness of the belt N/m
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
-p.bp = .5;     % Damping of the belt
+p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 %% Simulate the system
@@ -88,28 +88,43 @@ plot(t_vec, X_vec(:,7)-X_vec(:,1))
 xlabel('Time (s)')
 ylabel('Position error (m)')
 title('Input-Output shaft')
-
-exportVideo = 1;
-playbackRate = 1;
-RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
+ amp=.5;
+ freq=1;
+figure
+dy = amp*freq*2*pi*cos(freq*2*pi.*t_vec);
+plot(t_vec, dy)
+hold on
+plot(t_vec, X_vec(:,8))
+legend('Desired', 'Actual')
 
 figure
-for i=1:50
-    freq=i;
-    [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
- amp=.5;
-y = amp*cos(freq*2*pi.*t_vec);
-
-   output_amp = peak2peak(X_vec(7,:));
-   input_amp = peak2peak(y/2);
-   ratio(i) = output_amp/input_amp;
-    hold on
-    plot(freq,ratio,'md')
-    ylim([-2 2])
-end
-xlabel('Frequency (Hz)')
-ylabel('Amplitude Ratio')
-title('bode plot')
-
+y = amp*sin(freq*2*pi.*t_vec);
+plot(t_vec, y)
+hold on
+plot(t_vec, X_vec(:,7))
+legend('Desired pose', 'Actual pose')
 % 
+% exportVideo = 1;
+% playbackRate = 1;
+% RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
+
+% figure
+% for i=1:50
+%     freq=i;
+%     [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+%  amp=.5;
+% y = amp*cos(freq*2*pi.*t_vec);
+% 
+%    output_amp = peak2peak(X_vec(7,:));
+%    input_amp = peak2peak(y);
+%    ratio(i) = output_amp/input_amp;
+%     hold on
+%     plot(freq,ratio,'md')
+%     ylim([-2 2])
+% end
+% xlabel('Frequency (Hz)')
+% ylabel('Amplitude Ratio')
+% title('bode plot')
+
+
 
