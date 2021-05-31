@@ -141,12 +141,12 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     end
 
      %% input from the main code
-    x_state = interp1(t',X,t_plt);
+    x_state = interp1(t',X',t_plt);
     pistonInner_LaCy=x_state(3)*10+3;
     pistonInner_LbCy=-x_state(3)*10+3;
     pistonInner_RaCy=x_state(5)*10+3;
     pistonInner_RbCy=-x_state(5)*10+3;
-    ball_pose=x_state(9)*10+3;
+    ball_pose=x_state(9)*10;
     input=-x_state(1);
     output=-x_state(7);
 
@@ -183,7 +183,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 %     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
 %     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
 %     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
-    ballObj.globalMove(SE3([0, ball_pose, 0]));
+    ballObj.globalMove(SE3([pulley_bCx+8*pulley_bR, ball_pose, 0]));
 
     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
@@ -260,7 +260,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(14)= plot([water_ARx water_ARx],[4.5 water_ARy],'b','LineWidth',6);
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_aR*cos(input)],[pulley_aCy pulley_aCy+pulley_aR*sin(input)],'b','LineWidth',4);
-    plt(20)=plot([pulley_bCx pulley_bCx+5*pulley_bR*cos(output)],[pulley_bCy pulley_bCy+5*pulley_bR*sin(output)],'b','LineWidth',4);
+    plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_bR*cos(output)],[pulley_bCy pulley_bCy+10*pulley_bR*sin(output)],'g','LineWidth',10);
     
 
 %
@@ -276,6 +276,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     pistonInner_Lb.updatePlotData
     pistonInner_Ra.updatePlotData
     pistonInner_Rb.updatePlotData
+    ballObj.updatePlotData
 
 
 
