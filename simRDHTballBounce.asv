@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 3;
+    t_end = 5;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -225,7 +225,7 @@ function dX = dyn_ballrod(t,X,p)
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)        0       0; ...
         0                   0                   0                           0                           0                           0                           0                    0              0        1; ...
         0                   0                   0                           0                           0                           0                           0                0               0       0];
-    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
+    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*p.l_rod; 0; -9.81+p.kball*(dist)];
 
 end % dynamics
 %

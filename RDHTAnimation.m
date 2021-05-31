@@ -2,52 +2,50 @@ function RDHTAnimation(p,t,X,exportVideo,playbackRate)
 % For SE3
 
 FPS=60;
-addpath(fullfile(pwd,'..', 'groupTheory'))
+addpath('C:\Users\hkolano\Stuff\OSU\2021-2 ROB 542 Actuators\RDHT-project\groupTheory');
 % For CubeClass and SpringClass
-addpath(fullfile(pwd,'..', 'visualization'))
+addpath('C:\Users\hkolano\Stuff\OSU\2021-2 ROB 542 Actuators\RDHT-project\visualization')
 %% piston for the wall
-piston_wL = .5; %width
-piston_hL = 1; %height
+piston_wL = .05; %width
+piston_hL = .1; %height
 
 piston_LaCx=0; % A and B are input pistons - L (left)
-piston_LaCy=3;
-piston_LbCx=1;
-piston_LbCy=3;
+piston_LaCy=.3;
+piston_LbCx=.1;
+piston_LbCy=.3;
 
-piston_RaCx=3; % A and B are output pistons - R (left)
-piston_RaCy=3;
-piston_RbCx=4;
-piston_RbCy=3;
+piston_RaCx=.3; % A and B are output pistons - R (left)
+piston_RaCy=.3;
+piston_RbCx=.4;
+piston_RbCy=.3;
 
-piston_wR = .5;
-piston_hR = 1;
+piston_wR = .05;
+piston_hR = .1;
 
 %%% pulley dimensions
-pulley_aR = .5; % pulley are A and B , R-radius, C center co ordinates
-pulley_aCx=.5;
-pulley_aCy=2;
-pulley_bR = .5;
-pulley_bCx=3.5;
-pulley_bCy=2;
-
-
+pulley_aR = .05; % pulley are A and B , R-radius, C center co ordinates
+pulley_aCx=.05;
+pulley_aCy=.2;
+pulley_bR = .05;
+pulley_bCx=.35;
+pulley_bCy=.2;
 
 % inner pistons are A and B (two in left and 2 in right) , R-radius, C center co ordinates
 
-pistonIn_wL = .25;
-pistonIn_hL = 1;
+pistonIn_wL = .025;
+pistonIn_hL = .1;
 pistonInner_LaCx=0;
-pistonInner_LaCy=3;
-pistonInner_LaCy=3.1;
-pistonInner_LbCx=1;
-pistonInner_LbCy=3;
+pistonInner_LaCy=.3;
+pistonInner_LaCy=.31;
+pistonInner_LbCx=.1;
+pistonInner_LbCy=.3;
 
-pistonInner_RaCx=3;
-pistonInner_RaCy=3;
-pistonInner_RbCx=4;
-pistonInner_RbCy=3;
-pistonIn_wR = .25;
-pistonIn_hR = 1;
+pistonInner_RaCx=.3;
+pistonInner_RaCy=.3;
+pistonInner_RbCx=.4;
+pistonInner_RbCy=.3;
+pistonIn_wR = .025;
+pistonIn_hR = .1;
 
 %% diaphragm dimentions
 diaphragm_LBaseH=0;
@@ -137,10 +135,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
      %% input from the main code
     x_state = interp1(t',X,t_plt);
-    pistonInner_LaCy=x_state(3)*10+3
-    pistonInner_LbCy=-x_state(3)*10+3
-    pistonInner_RaCy=x_state(5)*10+3
-    pistonInner_RbCy=-x_state(5)*10+3
+    pistonInner_LaCy=x_state(3)+.3
+    pistonInner_LbCy=-x_state(3)+.3
+    pistonInner_RaCy=x_state(5)+.3
+    pistonInner_RbCy=-x_state(5)+.3
     input=-x_state(1)
     output=-x_state(7)
 

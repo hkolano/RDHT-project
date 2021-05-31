@@ -4,7 +4,7 @@ ROB 542: Actuator Dyamics, Assignment 7
 Rolling Diaphragm Hydrostatic Transmission simulation
 
 Main code
-Last modified by Hannah Kolano 5/30/21
+Last modified by Hannah Kolano 5/31/21
 %}
 
 close all
@@ -129,7 +129,7 @@ title('Bouncy Ball Position')
 % title('Input-Output shaft')
 
 % % % % Animate
-% exportVideo = false;
-% playbackRate = 1;
-% RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
+exportVideo = false;
+playbackRate = 1;
+RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 
