@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 2;
+    t_end = 10;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -117,7 +117,7 @@ function dX = freedyn(t,X,p)
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = .25*cos(p.freq*t);
+    Tau_in = p.ampli*cos(p.freq*t);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -155,7 +155,7 @@ function dX = dyn_ballfloor(t,X,p)
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = .25*cos(p.freq*t);
+    Tau_in = p.ampli*cos(p.freq*t);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -193,7 +193,7 @@ function dX = dyn_ballrod(t,X,p)
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = .25*cos(p.freq*t);
+    Tau_in = p.ampli*cos(p.freq*t);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;

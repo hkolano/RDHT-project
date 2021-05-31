@@ -47,7 +47,8 @@ p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
-p.freq = 2;
+p.freq = 20;
+p.ampli=11;
 
 % External disturbance
 % p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
@@ -105,6 +106,8 @@ title('Angular Displacement')
 %% Plot Bouncy Ball
 figure
 plot(t_vec, X_vec(9,:));
+hold on
+plot(t_vec, p.h+7.5*p.r*sin(X_vec(7,:)));
 xlabel('Time (s)')
 ylabel('Position (m)')
 title('Bouncy Ball Position')
@@ -126,7 +129,7 @@ title('Bouncy Ball Position')
 % title('Input-Output shaft')
 
 % % % % Animate
-exportVideo = false;
-playbackRate = 1;
-RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
+% exportVideo = false;
+% playbackRate = 1;
+% RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 
