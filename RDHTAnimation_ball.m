@@ -99,6 +99,7 @@ end
 
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
+plot([-2 12],[0 0],'color',[.45 0 .08],'LineWidth',30)
 
 %%% stationary like to fix the plot
 plot([-2 -2],[-2 12]);
@@ -184,7 +185,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 %     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
 %     piston_Ra.globalMove(SE3([piston_RaCx, piston_RaCy 0]))
 %     piston_Rb.globalMove(SE3([piston_RbCx, piston_RbCy 0]))
-    ballObj.globalMove(SE3([pulley_bCx+7.5*pulley_bR, ball_pose+2, 0]));
+    ballObj.globalMove(SE3([pulley_bCx+7.5*pulley_bR, ball_pose, 0]));
 
     piston_La.globalMove(SE3([piston_LaCx, piston_LaCy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_LbCy, 0]))
@@ -261,7 +262,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(14)= plot([water_ARx water_ARx],[4.5 water_ARy],'b','LineWidth',6);
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_aR*cos(input)],[pulley_aCy pulley_aCy+pulley_aR*sin(input)],'b','LineWidth',4);
-    plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_bR*cos(output)],[pulley_bCy pulley_bCy+10*pulley_bR*sin(output)],'g','LineWidth',10);
+    plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_bR*cos(output)],[pulley_bCy pulley_bCy+10*pulley_bR*sin(output)],'color',[.5 .5 .5],'LineWidth',10);
     
 
 %
