@@ -78,7 +78,7 @@ function dX = dyn(t,X,p)
     % t == time
     % X == the state
     % p == parameters structure
-    Tau_in = .5*cos(t);
+    Tau_in = .5*cos(p.freq*t);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;

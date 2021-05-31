@@ -57,6 +57,33 @@ xlabel('Time (s)')
 ylabel('Torque (Nm)')
 legend('Input', 'Output')
 
+%% Sweep
+
+input_amp = p.tamp*2;
+frequencies = [0.1 0.2 0.5 1 2 5 10 15 20 22.5 25 27.5 30 35 40 45 50 80 100];
+% frequencies = [1];
+n = length(frequencies);
+torque_ratios = [];
+
+for i=1:n
+    p.freq=frequencies(i)*2*pi;
+    [t_vec, X_vec] = simRDHTfixedOutput(X0,p);
+
+   f_out = [0  0   0   0   p.kp*p.r/p.Ip   p.bp*p.r/p.Ip   -p.kp*p.r^2/p.Ip   -p.bp*p.r^2/p.Ip]*X_vec'.*p.Ip;
+
+   output_amp = peak2peak(f_out(floor(length(f_on_output)/4):end))
+   torque_ratio = output_amp/input_amp;
+   torque_ratios(i) = torque_ratio;
+end
+
+%% Plot Bode
+db_ratios = mag2db(torque_ratios);
+figure
+semilogx(frequencies(4:end), db_ratios(4:end), 'LineWidth', 2)
+xlabel('Frequency (Hz)')
+ylabel('Amplitude Ratio (dB)')
+title('Output:Input Ratio')
+
 % plot_angles(t_vec, X_vec(:,1), X_vec(:,7));
 % 
 % plot_angle_error(t_vec, X_vec(:,1), X_vec(:,7));
