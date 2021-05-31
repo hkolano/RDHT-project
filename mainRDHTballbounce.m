@@ -125,8 +125,8 @@ title('Bouncy Ball Position')
 % ylabel('Position error (rad)')
 % title('Input-Output shaft')
 
-%Animate
-% exportVideo = false;
-% playbackRate = 1;
-% RDHTAnimation(p,t_vec,X_vec,exportVideo,playbackRate);
+% % % % Animate
+exportVideo = false;
+playbackRate = 1;
+RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 
