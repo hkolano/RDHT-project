@@ -27,13 +27,17 @@ p.Ip = 0.5*mp*p.r^2;   % pulley inertia
 p.mpd = 0.05;  % Piston and diaphragm mass, kg
 p.mw = 0.1;   % Total mass of the water
 p.mw2 = p.mw/2;   % Mass of half the water
-
 p.mball = 0.058; % tennis ball weighs 58g
+
+rad_rod = 0.01; % radius of rod: 1 cm
+p.l_rod = 10*p.r; % length of rod is 10x radius of pulley
+vol_rod = pi*(rad_rod^2-(rad_rod-0.002)^2)*p.l_rod; % pi*(r_outer^2 - r_inner^2)*length
+p.mrod = vol_rod*2700; 
 
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.kh = 1573;   % Stiffness of the hose N/m of y1
-p.kball = 10;   % Stiffness of tennis ball
+p.kball = 16600;   % Stiffness of tennis ball - 95 lb/in = 16637 N/m
 
 % Damping
 p.bp = 100;     % Damping of the belt
