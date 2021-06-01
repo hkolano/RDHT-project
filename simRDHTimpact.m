@@ -1,4 +1,4 @@
-function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun) %  sol_set, mask] 
+function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_impact) %  sol_set, mask] 
     %{
     Simulation script for RDHT simulation
 
@@ -31,8 +31,9 @@ function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun) %  sol_set, mask]
         'Events', hit_event_fun);
 
     % Bind dynamics function
-    free_dyn_fun = @(t,X)freedyn(t,X,p,ctlr_fun);
-    contact_dyn_fun = @(t,X)dyn_ballfloor(t,X,p,ctlr_fun);
+    ctrl_fun=@(t)p.ampli*sin(p.freq*2*pi*t);
+    free_dyn_fun = @(t,X)freedyn(t,X,p,ctlr_impact);
+    contact_dyn_fun = @(t,X)dyn_ballfloor(t,X,p,ctlr_impact);
     
     % States
     % 1: ball freefloating
@@ -88,7 +89,7 @@ function dX = freedyn(t,X,p,ctrl_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_ctrl = ctrl_fun(t);
+    Tau_ctrl = ctrl_fun(t,X);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -120,7 +121,7 @@ function dX = dyn_ballfloor(t,X,p,ctrl_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_ctrl = ctrl_fun(t);
+    Tau_ctrl = ctrl_fun(t,X);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;

@@ -47,7 +47,7 @@ p.kacc = 750; % Stiffness of accumulator, complete guess
 p.kh = 1/(1/p.khose+1/p.kacc); % Effective stiffness of "hose"
 
 % Damping
-p.bp = 100;     % Damping of the belt
+p.bp = 200;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
@@ -55,7 +55,7 @@ p.freq = 1;
 p.ampli=1;
 
 % set up controller
-ctlr_fun = @(t)p.ampli*sin(p.freq*2*pi*t);
+ctlr_fun = @(t,X)ctlrRDHTimpact(t,X,p);
 
 %% Simulate the system
 X0 = [.5 0 .5*p.r 0 .5*p.r 0 .5 0];

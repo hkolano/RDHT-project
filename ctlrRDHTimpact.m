@@ -9,7 +9,7 @@ function F = ctlrRDHTPosition(t,X,p)
 
 y = p.obstacle_height;
 dy = 0;
-F =210*(y-theta_2)+.05*(dy-dtheta_2);
+F =210*(y-theta_2)+.3*(dy-dtheta_2);
 
 % F=0;
 end
