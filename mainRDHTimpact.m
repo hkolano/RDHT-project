@@ -71,10 +71,10 @@ plot_obstacle_and_rod(t_vec, X_vec, p);
 plot_output_force(t_vec,X_vec,p);
 
 
-%% Animate
+% %% Animate
 % exportVideo = false;
 % playbackRate = 1;
-% RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
+% RDHTAnimation_impact(p,t_vec,X_vec,exportVideo,playbackRate);
 
 %% Plotting Functions
 function plot_output_force(t_vec,X_vec,p)
