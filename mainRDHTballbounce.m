@@ -48,7 +48,7 @@ p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
 p.freq = 8;
-p.ampli=.75;
+p.ampli=.8;
 
 % External disturbance
 % p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees

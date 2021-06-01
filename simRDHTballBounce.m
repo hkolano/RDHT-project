@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p,ctlr_fun) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 2;
+    t_end = 4;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -186,6 +186,9 @@ function dX = dyn_ballfloor(t,X,p,ctlr_fun)
     dX_system = A*X(1:8) + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; 0];
     dX_ball = [0 1; -p.kball/p.mball 0]*X(9:10)+[0; -9.81];
     dX = [dX_system; dX_ball];
+    
+    
+    
 end % dynamics
 
 %% Hybrid functions

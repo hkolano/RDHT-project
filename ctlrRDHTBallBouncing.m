@@ -12,7 +12,7 @@ function F = ctlrRDHTPosition(t,X,p)
 
 y = p.ampli*sin(p.freq*2*pi.*t);
 dy =p.ampli*p.freq*2*pi*cos(p.freq*2*pi.*t);
-F =60*(y-theta_2)+.1*(dy-dtheta_2);
+F =40*(y-theta_2)+.01*(dy-dtheta_2);
 
 % F=0;
 end
