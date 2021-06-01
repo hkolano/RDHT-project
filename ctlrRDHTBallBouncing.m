@@ -10,9 +10,9 @@ function F = ctlrRDHTPosition(t,X,p)
 %  amp=.5;
 %  freq=1;
 
-y = p.ampli*sin(p.freq*2*pi.*t);
-dy =p.ampli*p.freq*2*pi*cos(p.freq*2*pi.*t);
-F =40*(y-theta_2)+.01*(dy-dtheta_2);
+y = p.ampli*sin(p.freq*2*pi.*t+pi/2);
+dy =p.ampli*p.freq*2*pi*cos(p.freq*2*pi.*t+pi/2);
+F =100*(y-theta_2)+.1*(dy-dtheta_2);
 
 % F=0;
 end

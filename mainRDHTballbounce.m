@@ -21,7 +21,7 @@ p.A2 = (0.024/2)^2*pi; % Area of ouput piston, in m^2
 p.a = (.006/2)^2*pi; % Area of the tube, in m^2
 p.strokelim = 56.8/2/1000; % Stroke length limit (either way from 0)
 
-p.h = 0.5; % Distance between pulley center and ground
+p.h = .75; % Distance between pulley center and ground
 
 % Masses
 mp = 0.05;  % Pulley mass
@@ -38,7 +38,7 @@ p.mrod = vol_rod*2700;
 p.Irod = p.mrod*p.l_rod^2/3;
 
 % Stiffnesses
-p.kp = 2014000; % Stiffness of the belt N/m 
+p.kp = 2014000; % Stiffness of the belt N/m
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 p.kball = 16600;   % Stiffness of tennis ball - 95 lb/in = 16637 N/m
 
@@ -47,8 +47,8 @@ p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
-p.freq = 2;
-p.ampli=.8;
+p.freq = 5;
+p.ampli=.7;
 
 % External disturbance
 % p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
@@ -66,7 +66,7 @@ p.ampli=.8;
 % ctlr_fun = @(t,X) ctlrRDHTforce(t,X,c,p,tau_des, traj_fun);
 
 %% Simulate the system
-X0 = [.5 0 .5*p.r 0 .5*p.r 0 .5 0, 1.5, 0];
+X0 = [.5 0 .5*p.r 0 .5*p.r 0 .5 0, 2.5, 0];
 ctlr_fun = @(t,X,freq) ctlrRDHTBallBouncing(t,X,p);
 [t_vec, X_vec] = simRDHTballBounce(X0,p,ctlr_fun);
 
@@ -111,18 +111,19 @@ plot(t_vec, p.h-7.5*p.r*sin(X_vec(7,:)));
 xlabel('Time (s)')
 ylabel('Position (m)')
 title('Bouncy Ball Position')
+legend('Ball Height', 'Rod Contact Point Height')
 
 for i=1:length(t_vec)
-y(i) = p.ampli*sin(p.freq*2*pi.*t_vec(i));    
+y(i) = p.ampli*sin(p.freq*2*pi.*t_vec(i));
 end
 
-figure
-
-plot(t_vec,y,'r')
-hold on
-plot(t_vec, X_vec(7,:),'b')
-title('Desired vs actual')
-legend('desired pose','actual pose')
+% figure
+%
+% plot(t_vec,y,'r')
+% hold on
+% plot(t_vec, X_vec(7,:),'b')
+% title('Desired vs actual')
+% legend('desired pose','actual pose')
 
 % figure
 % plot(t_vec, X_vec(:,3))
@@ -134,7 +135,7 @@ legend('desired pose','actual pose')
 % title('Piston Displacement')
 
 % figure
-% 
+%
 % plot(t_vec, X_vec(:,7)-X_vec(:,1))
 % xlabel('Time (s)')
 % ylabel('Position error (rad)')
@@ -144,4 +145,3 @@ legend('desired pose','actual pose')
 exportVideo = false;
 playbackRate = 1;
 RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
-

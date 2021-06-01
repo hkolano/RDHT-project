@@ -51,32 +51,41 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p,ctlr_fun) %  sol_set, mask]
         % Simulate the dynamics over a time interval
         % Kept framework for hybrid dynamics
         if p.state == 1
+%             disp('In state 1')
             sol = ode45(free_dyn_fun, [t_start,t_end], X0, optionsFree);
             disp('Contact! at t = ')
             disp(sol.x(end))
-            if sol.ie == 1 % if hits the ground
-                disp('Hit the ground')
+%             disp('Event index detected:')
+%             disp(sol.ie)
+            if sol.ie == 2 % if hits the rod
+%                 disp('Hit the rod')
                 coeffRest = 1;
-                p.state = 2;
-            else % if hits the rod
-                disp('Hit the rod')
-                coeffRest = 1;
+%                 disp('Going to state 3')
                 p.state = 3;
+            else % if hits the ground
+%                 disp('Hit the ground')
+                coeffRest = 1;
+%                 disp('Going to state 2')
+                p.state = 2;
             end
         elseif p.state == 2
+%             disp('In State 2')
             sol = ode45(ball_floor_dyn_fun, [t_start,t_end], X0, optionsFloor);
             disp('Disconnected! at t = ')
             disp(sol.x(end))
+%             disp('Going to state 1')
 %             disp('state after contact:')
 %             disp(sol.y(10,end))
             coeffRest = 0.75;
             p.state = 1;
         else
+%             disp('In state 3')
             sol = ode45(ball_rod_dyn_fun, [t_start,t_end], X0, optionsRod);
             disp('Disconnected! at t = ')
             disp(sol.x(end))
 %             disp('state after contact:')
 %             disp(sol.y(10,end))
+%             disp('Going to state 1')
             coeffRest = 0.75;
             p.state = 1;
         end
@@ -230,7 +239,7 @@ function dX = dyn_ballrod(t,X,p,ctlr_fun)
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)        0       0; ...
         0                   0                   0                           0                           0                           0                           0                    0              0        1; ...
         0                   0                   0                           0                           0                           0                           0                0               0       0];
-   dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
+   dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
 
 
 end % dynamics
