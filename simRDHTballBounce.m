@@ -216,7 +216,7 @@ function dX = dyn_ballrod(t,X,p,ctlr_fun)
         b = 0;
     end
     
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
 
 
@@ -242,7 +242,7 @@ function [eventVal, isterminal, direction] = freeBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
     eventVal = [X(9), dist];   % when spring at equilibrium distance...
     isterminal = [1, 1];     % stops the sim
@@ -273,7 +273,7 @@ function [eventVal, isterminal, direction] = rodBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
     eventVal =  dist;   % when force from spring and damper = 0...
     isterminal = 1;     % stops the sim
