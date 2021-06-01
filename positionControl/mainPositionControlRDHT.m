@@ -33,7 +33,7 @@ p.kp = 2014000; % Stiffness of the belt N/m
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
-p.bp = 1000;     % Damping of the belt
+p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 %% Simulate the system
