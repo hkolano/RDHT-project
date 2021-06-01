@@ -33,7 +33,7 @@ p.kp = 2014000; % Stiffness of the belt N/m
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
 % Damping
-p.bp = 100;     % Damping of the belt
+p.bp = 1000;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 %% Simulate the system
@@ -104,9 +104,9 @@ hold on
 plot(t_vec, X_vec(:,7))
 legend('Desired pose', 'Actual pose')
 % 
-% exportVideo = 1;
-% playbackRate = 1;
-% RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
+exportVideo = 1;
+playbackRate = 1;
+RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
 
 % figure
 % for i=1:50

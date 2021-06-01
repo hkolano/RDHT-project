@@ -1,4 +1,4 @@
-function F = ctlrRDHTPosition(t,X,p)
+function F = ctlrRDHTPosition(t,X,freq)
     % Find desired linear force on bel
     
     x_2 = X(5,:);
@@ -7,12 +7,12 @@ function F = ctlrRDHTPosition(t,X,p)
     dtheta_2 = X(8,:);
     % ddy = -amp*(freq*2*pi)^2*cos(freq*2*pi.*t);
 
-
+amp=.5;
 %  freq=1;
 
-y = p.ampli*sin(p.freq*2*pi.*t);
-dy = p.amp*p.freq*2*pi*cos(p.freq*2*pi.*t);
-F =210*(y-theta_2)+.05*(dy-dtheta_2);
+y = amp*sin(freq*2*pi.*t);
+dy = amp*freq*2*pi*cos(freq*2*pi.*t);
+F =220*(y-theta_2)+.1*(dy-dtheta_2);
 
 % F=0;
 end

@@ -2,9 +2,9 @@ function RDHTAnimation(p,t,X,exportVideo,playbackRate)
 % For SE3
 
 FPS=60;
-% addpath(fullfile(pwd,'..', 'groupTheory'))
+ addpath(fullfile(pwd,'..', 'groupTheory'))
 % For CubeClass and SpringClass
-% addpath(fullfile(pwd,'..', 'visualization'))
+ addpath(fullfile(pwd,'..', 'visualization'))
 
 %% pulley dimensions
 pulley_R = .025; % pulley are A and B , R-radius, C center co ordinates

@@ -120,7 +120,7 @@ zlabel('z Position (m)')
 % h.figure.Children(1).DataAspectRatio = [1 1 1];
 
 if exportVideo
-   v = VideoWriter('PoseControlled.mp4', 'MPEG-4');
+   v = VideoWriter('PoseControll_highB.mp4', 'MPEG-4');
    v.FrameRate = FPS;
    open(v)
 end

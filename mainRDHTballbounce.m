@@ -47,7 +47,7 @@ p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
-p.freq = 8;
+p.freq = 2;
 p.ampli=.8;
 
 % External disturbance
