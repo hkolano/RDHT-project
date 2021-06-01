@@ -61,7 +61,7 @@ function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun) %  sol_set, mask]
         t_start = sol.x(end);
         % Set the initial conditions to the end of the last run
         if t_start == t_end
-            X0 = [0 0 0 0 0 0 0 0 0 0];
+            X0 = [0 0 0 0 0 0 0 0];
         else
             X0 = sol.ye(:,end);
         end

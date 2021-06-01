@@ -54,10 +54,6 @@ p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 p.freq = 1;
 p.ampli=1;
 
-% External disturbance
-% p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
-% p.dist_freq = 0.25; % Frequency of disturbance, Hz
-
 % set up controller
 ctlr_fun = @(t)p.ampli*sin(p.freq*2*pi*t);
 
@@ -66,66 +62,53 @@ X0 = [.5 0 .5*p.r 0 .5*p.r 0 .5 0];
 
 [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun);
 
-
-%% retrieve control force
-% force = ctlr_fun(t_vec',X_vec');
-% figure
-% plot(t_vec, force)
-% xlabel('Time (s)')
-% ylabel('Controller Force (Nm)')
-% title('Controller Output')
-
-%% Retrieve output forces
-% [~, ~, ddy] = traj_fun(t_vec);
-% system_state = X_vec(1:8,:);
-% tau_out = [0  0   0   0   p.kp*p.r    p.bp*p.r   -p.kp*p.r^2   -p.bp*p.r^2]*system_state;
-% % output_tau = calculate_output_torque(t_vec, X_vec, traj_fun)
-% figure
-% plot(t_vec, tau_out,  'b-', 'LineWidth', 2)
-% ylabel('Output Force (Nm)')
-% xlabel('Time (s)')
-% title('Torque on Output')
-
-
 %% Plotting
-figure
-% plot(t_vec, X_vec(1,:))
-plot(t_vec, X_vec(1,:));
-hold on
-plot(t_vec, X_vec(7,:))
-% plot(t_vec, 5*sin(t_vec))
-legend('Theta1', 'Theta2')
-xlabel('Time (s)')
-ylabel('Radians')
-title('Angular Displacement')
 
-%% Plot Bouncy Ball
-figure
-plot(t_vec, ones(length(X_vec))*p.obstacle_height, 'm-');
-hold on
-plot(t_vec, p.h-7.5*p.r*sin(X_vec(7,:)), 'b-');
-xlabel('Time (s)')
-ylabel('Position (m)')
-title('Rod vs Obstacle')
+plot_input_output_angles(t_vec,X_vec);
 
-% figure
-% plot(t_vec, X_vec(:,3))
-% hold on
-% plot(t_vec, X_vec(:,5))
-% legend('x1', 'x2')
-% xlabel('Time (s)')
-% ylabel('Displacement (m)')
-% title('Piston Displacement')
+plot_obstacle_and_rod(t_vec, X_vec, p);
 
-% figure
-% 
-% plot(t_vec, X_vec(:,7)-X_vec(:,1))
-% xlabel('Time (s)')
-% ylabel('Position error (rad)')
-% title('Input-Output shaft')
+plot_output_force(t_vec,X_vec,p);
 
-% % % % Animate
+
+%% Animate
 % exportVideo = false;
 % playbackRate = 1;
 % RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 
+%% Plotting Functions
+function plot_output_force(t_vec,X_vec,p)
+    system_state = X_vec(1:8,:);
+    tau_out = [0  0  0    0   p.kp*p.r    p.bp*p.r    -p.kp*p.r^2     -p.bp*p.r^2]*system_state;
+    force_out = tau_out/(.75*p.l_rod);
+    disp('Max impulse force:')
+    disp(max(force_out))
+    figure
+    plot(t_vec, force_out,  'm-')
+    ylabel('Output Force (N)')
+    xlabel('Time (s)')
+    title('Force on Obstacle')
+end
+
+function plot_obstacle_and_rod(t_vec, X_vec, p)
+    figure
+    plot(t_vec, ones(length(X_vec))*p.obstacle_height, 'm-');
+    hold on
+    plot(t_vec, p.h-7.5*p.r*sin(X_vec(7,:)), 'b-');
+    xlabel('Time (s)')
+    ylabel('Position (m)')
+    title('Rod vs Obstacle')
+end
+
+function plot_input_output_angles(t_vec, X_vec)
+    figure
+    % plot(t_vec, X_vec(1,:))
+    plot(t_vec, X_vec(1,:));
+    hold on
+    plot(t_vec, X_vec(7,:))
+    % plot(t_vec, 5*sin(t_vec))
+    legend('Theta1', 'Theta2')
+    xlabel('Time (s)')
+    ylabel('Radians')
+    title('Angular Displacement')
+end
