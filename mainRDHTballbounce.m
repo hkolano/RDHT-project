@@ -141,7 +141,7 @@ legend('desired pose','actual pose')
 % title('Input-Output shaft')
 
 % % % % Animate
-% % exportVideo = false;
-% % playbackRate = 1;
-% % RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
+exportVideo = false;
+playbackRate = 1;
+RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 
