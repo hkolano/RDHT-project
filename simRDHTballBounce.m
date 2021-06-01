@@ -29,10 +29,10 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
         'RelTol', 1e-6, 'AbsTol', 1e-6, ...
         'Events', free_event_fun);
     optionsFloor = odeset(...
-        'RelTol', 1e-5, 'AbsTol', 1e-5, ...
+        'RelTol', 1e-6, 'AbsTol', 1e-6, ...
         'Events', floor_event_fun);
     optionsRod = odeset(...
-        'RelTol', 1e-5, 'AbsTol', 1e-5, ...
+        'RelTol', 1e-6, 'AbsTol', 1e-6, ...
         'Events', rod_event_fun);
 
     % Bind dynamics function
@@ -211,7 +211,7 @@ function dX = dyn_ballrod(t,X,p)
         b = 0;
     end
     
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
 
 
@@ -225,7 +225,7 @@ function dX = dyn_ballrod(t,X,p)
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)        0       0; ...
         0                   0                   0                           0                           0                           0                           0                    0              0        1; ...
         0                   0                   0                           0                           0                           0                           0                0               0       0];
-    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
+    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
 
 end % dynamics
 %
@@ -236,7 +236,7 @@ function [eventVal, isterminal, direction] = freeBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
     eventVal = [X(9), dist];   % when spring at equilibrium distance...
     isterminal = [1, 1];     % stops the sim
@@ -267,7 +267,7 @@ function [eventVal, isterminal, direction] = rodBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
     dist = height_rod-X(9);
     eventVal =  dist;   % when force from spring and damper = 0...
     isterminal = 1;     % stops the sim

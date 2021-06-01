@@ -107,7 +107,7 @@ title('Angular Displacement')
 figure
 plot(t_vec, X_vec(9,:));
 hold on
-plot(t_vec, p.h+7.5*p.r*sin(X_vec(7,:)));
+plot(t_vec, p.h-7.5*p.r*sin(X_vec(7,:)));
 xlabel('Time (s)')
 ylabel('Position (m)')
 title('Bouncy Ball Position')
