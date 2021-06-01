@@ -1,4 +1,4 @@
-function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask] 
+function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun) %  sol_set, mask] 
     %{
     Simulation script for RDHT simulation
 
@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 5;
+    t_end = 3;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -20,64 +20,37 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
     sol_set = {};
     
     free_event_fun = @(t,X)freeBallEvent(t,X,p);
-    floor_event_fun = @(t,X)floorBallEvent(t,X,p);
-    rod_event_fun = @(t,X)rodBallEvent(t,X,p);
-    
+    hit_event_fun = @(t,X)contactBallEvent(t,X,p);
 
     % Simulation tolerances
     optionsFree = odeset(...
         'RelTol', 1e-6, 'AbsTol', 1e-6, ...
         'Events', free_event_fun);
     optionsFloor = odeset(...
-        'RelTol', 1e-5, 'AbsTol', 1e-5, ...
-        'Events', floor_event_fun);
-    optionsRod = odeset(...
-        'RelTol', 1e-5, 'AbsTol', 1e-5, ...
-        'Events', rod_event_fun);
+        'RelTol', 1e-6, 'AbsTol', 1e-6, ...
+        'Events', hit_event_fun);
 
     % Bind dynamics function
-    free_dyn_fun = @(t,X)freedyn(t,X,p);
-    ball_floor_dyn_fun = @(t,X)dyn_ballfloor(t,X,p);
-    ball_rod_dyn_fun = @(t,X)dyn_ballrod(t,X,p);
+    free_dyn_fun = @(t,X)freedyn(t,X,p,ctlr_fun);
+    contact_dyn_fun = @(t,X)dyn_ballfloor(t,X,p,ctlr_fun);
     
     % States
     % 1: ball freefloating
-    % 2: ball contacting ground
-    % 3: ball contacting arm
+    % 2: ball contacting "ground"
     p.state = 1;
 
 
     while t_start < t_end
         % Simulate the dynamics over a time interval
-        % Kept framework for hybrid dynamics
         if p.state == 1
             sol = ode45(free_dyn_fun, [t_start,t_end], X0, optionsFree);
             disp('Contact! at t = ')
             disp(sol.x(end))
-            if sol.ie == 1 % if hits the ground
-                disp('Hit the ground')
-                coeffRest = 1;
-                p.state = 2;
-            else % if hits the rod
-                disp('Hit the rod')
-                coeffRest = 1;
-                p.state = 3;
-            end
-        elseif p.state == 2
-            sol = ode45(ball_floor_dyn_fun, [t_start,t_end], X0, optionsFloor);
+            p.state = 2;
+        else % p.state == 2
+            sol = ode45(contact_dyn_fun, [t_start,t_end], X0, optionsFloor);
             disp('Disconnected! at t = ')
             disp(sol.x(end))
-%             disp('state after contact:')
-%             disp(sol.y(10,end))
-            coeffRest = 0.75;
-            p.state = 1;
-        else
-            sol = ode45(ball_rod_dyn_fun, [t_start,t_end], X0, optionsRod);
-            disp('Disconnected! at t = ')
-            disp(sol.x(end))
-%             disp('state after contact:')
-%             disp(sol.y(10,end))
-            coeffRest = 0.75;
             p.state = 1;
         end
 
@@ -91,7 +64,6 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
             X0 = [0 0 0 0 0 0 0 0 0 0];
         else
             X0 = sol.ye(:,end);
-            X0(10) = sol.y(10,end)*coeffRest;
         end
     end
 %
@@ -112,13 +84,11 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
 end % simRDHT
 
-function dX = freedyn(t,X,p)
+function dX = freedyn(t,X,p,ctrl_fun)
     % t == time
-    % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
-    % y, y1)
+    % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
-%     Tau_in = 0;
+    Tau_ctrl = ctrl_fun(t);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -134,8 +104,6 @@ function dX = freedyn(t,X,p)
         k = 0;
         b = 0;
     end
-
-
     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
         0                   0                   0                           1                           0                           0                           0                   0; ...
@@ -144,19 +112,15 @@ function dX = freedyn(t,X,p)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)     -p.bp*p.r^2/(p.Ip+p.Irod)];
-    dX_system = A*X(1:8) + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
-    dX_ball = [0 1; 0 0]*X(9:10)+[0; -9.81];
-    dX = [dX_system; dX_ball];
+    dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; 0];
 end % dynamics
 
 %% Hybrid functions
-function dX = dyn_ballfloor(t,X,p)
+function dX = dyn_ballfloor(t,X,p,ctrl_fun)
     % t == time
-    % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
-    % y, y1)
+    % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
-%     Tau_in = 0;
+    Tau_ctrl = ctrl_fun(t);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -172,8 +136,6 @@ function dX = dyn_ballfloor(t,X,p)
         k = 0;
         b = 0;
     end
-
-
     A = [0                 1                   0                           0                           0                           0                           0                   0; ...
         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
         0                   0                   0                           1                           0                           0                           0                   0; ...
@@ -182,53 +144,16 @@ function dX = dyn_ballfloor(t,X,p)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)];
-    dX_system = A*X(1:8) + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
-    dX_ball = [0 1; -p.kball/p.mball 0]*X(9:10)+[0; -9.81];
-    dX = [dX_system; dX_ball];
+    dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; 0];
+    if dX(7) > 0
+        dX(7) = 0;
+    end
+    if dX(8) > 0
+        dX(8) = 0;
+    end
 end % dynamics
 
 %% Hybrid functions
-function dX = dyn_ballrod(t,X,p)
-    % t == time
-    % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
-    % y, y1)
-    % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
-%     Tau_in = 0;
-
-    M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
-    M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
-    kpaOVA1  = p.kp*p.a/p.A1;
-    bpaOVA1  = p.bp*p.a/p.A1;
-    kpaOVA2  = p.kp*p.a/p.A2;
-    bpaOVA2  = p.bp*p.a/p.A2;
-
-    if abs(X(3)) > p.strokelim
-        k = 5000;
-        b = 10;
-    else
-        k = 0;
-        b = 0;
-    end
-    
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
-    dist = height_rod-X(9);
-
-
-    A = [0                 1                   0                           0                           0                           0                           0                   0                0       0; ...
-        -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0                0       0; ...
-        0                   0                   0                           1                           0                           0                           0                   0               0       0; ...
-        kpaOVA1*p.r/M1     bpaOVA1*p.r/M1     (-kpaOVA1-p.kh*p.A1/p.a-k)/M1  (-bpaOVA1-p.bf*p.A1/p.a-b)/M1  p.kh*p.A2/(p.a*M1)      0                           0                   0               0       0; ...
-        0                   0                   0                           0                           0                           1                           0                   0               0       0; ...
-        0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2  0       0; ...
-        0                   0                   0                           0                           0                           0                           0                   1               0       0; ...
-        0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)        0       0; ...
-        0                   0                   0                           0                           0                           0                           0                    0              0        1; ...
-        0                   0                   0                           0                           0                           0                           0                0               0       0];
-    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*p.l_rod; 0; -9.81+p.kball*(dist)];
-
-end % dynamics
-%
 function [eventVal, isterminal, direction] = freeBallEvent(t,X,p)
     % Inputs
     % t: time, X: the state, p: parameters structure
@@ -236,42 +161,22 @@ function [eventVal, isterminal, direction] = freeBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
-    dist = height_rod-X(9);
-    eventVal = [X(9), dist];   % when spring at equilibrium distance...
-    isterminal = [1, 1];     % stops the sim
-    direction = [-1, -1];      % any direction
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
+    dist = height_rod-p.obstacle_height;
+    eventVal = dist;   % when spring at equilibrium distance...
+    isterminal = 1;     % stops the sim
+    direction = -1;      % any direction
 end
 %
-function [eventVal, isterminal, direction] = floorBallEvent(t,X,p)
-% halting event function for ODE simulation. Events are distance to
-    % ceiling and distance to paddle
-    % Inputs
+function [eventVal, isterminal, direction] = contactBallEvent(t,X,p)
     % t: time, X: the state, p: parameters structure
-    % Outputs
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-
-    eventVal =  X(9);   % when force from spring and damper = 0...
+    height_rod = p.h-0.75*p.l_rod*sin(X(7));
+    dist = height_rod-p.obstacle_height;
+    eventVal = dist;   % when spring at equilibrium distance...
     isterminal = 1;     % stops the sim
-    direction = 1;      % doesn't matter which direction
+    direction = 1;      % any direction
 end
-
-function [eventVal, isterminal, direction] = rodBallEvent(t,X,p)
-% halting event function for ODE simulation. Events are distance to
-    % ceiling and distance to paddle
-    % Inputs
-    % t: time, X: the state, p: parameters structure
-    % Outputs
-    % eventVal: Vector of event functions that halt at zero crossings
-    % isterminal: if the simulation should halt (yes for both)
-    % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h+0.75*p.l_rod*sin(X(7));
-    dist = height_rod-X(9);
-    eventVal =  dist;   % when force from spring and damper = 0...
-    isterminal = 1;     % stops the sim
-    direction = 1;      % doesn't matter which direction
-end
-
 
