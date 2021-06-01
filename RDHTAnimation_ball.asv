@@ -8,9 +8,9 @@ FPS=60;
 
 %% pulley dimensions
 pulley_R = .025; % pulley are A and B , R-radius, C center co ordinates
-pulley_Cy=.5; % Height of pulley off of ground
+pulley_Cy=2; % Height of pulley off of ground
 pulley_aCx=0;
-pulley_bCx=.5;
+pulley_bCx=1;
 
 % Tennis ball dimensions
 ball_r = 0.0675/2;
@@ -21,7 +21,7 @@ piston_w = .05; %width
 piston_h = .125; %height
 
 % Piston reference geometry center positions
-piston_Cy = .65; % Height of center of piston
+piston_Cy = .5; % Height of center of piston
 
 piston_LaCx=pulley_aCx-pulley_R; % A and B are input pistons - L (left)
 piston_LbCx=pulley_aCx+pulley_R;
@@ -66,13 +66,17 @@ h.figure.Position(3:4) = [1280 720];
 movegui(h.figure)
 
 %% set up  plot
-
+% piston_La.plot
+% piston_Lb.plot
+% piston_Ra.plot
+% piston_Rb.plot
 pistonInner_La.plot
 pistonInner_Lb.plot
 pistonInner_Ra.plot
 pistonInner_Rb.plot
 ballObj.plot
-
+% pulley_aObj.plot
+% pulley_bObj.plot
 
 %%% ploting the belt around the pulley that appears stationary
 ph=0:.1:pi;
@@ -85,11 +89,11 @@ end
 
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
-plot([-.22 1],[0 0],'color',[.45 0 .08],'LineWidth',6)
+plot([-2 12],[0 0],'color',[.45 0 .08],'LineWidth',30)
 
 %%% stationary like to fix the plot
-plot([-.02 -.02],[-.02 1],'color',[1 1 1]);
-plot([-.02 1],[-.02 -.02],'color',[1 1 1]);
+plot([-2 -2],[-2 12]);
+plot([-2 12],[-2 -2]);
 %%%%% the pulley plot which is  stationary
 ph=0:.1:2*pi;
 for i=1:length(ph)
@@ -130,10 +134,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
      %% input from the main code
     x_state = interp1(t',X',t_plt);
-    pistonInner_LaCy=x_state(3)+piston_Cy;
-    pistonInner_LbCy=-x_state(3)+piston_Cy;
-    pistonInner_RaCy=x_state(5)+piston_Cy;
-    pistonInner_RbCy=-x_state(5)+piston_Cy;
+    pistonInner_LaCy=x_state(3)+3;
+    pistonInner_LbCy=-x_state(3)+3;
+    pistonInner_RaCy=x_state(5)+3;
+    pistonInner_RbCy=-x_state(5)+3;
     ball_pose=x_state(9);
     input=-x_state(1);
     output=-x_state(7);
@@ -146,18 +150,25 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     pistonInner_Ra.resetFrame
     pistonInner_Rb.resetFrame
     ballObj.resetFrame
-
+%     pulley_aObj.resetFrame
+%     pulley_bObj.resetFrame
+%
 
 
     %% pistons
-
+%     piston_La.globalMove(SE3([piston_LaCx, piston_Cy, 0]))
+%     piston_Lb.globalMove(SE3([piston_LbCx, piston_Cy, 0]))
+%     piston_Ra.globalMove(SE3([piston_RaCx, piston_Cy 0]))
+%     piston_Rb.globalMove(SE3([piston_RbCx, piston_Cy 0]))
     ballObj.globalMove(SE3([pulley_bCx+7.5*pulley_R, ball_pose, 0]));
 
     piston_La.globalMove(SE3([piston_LaCx, piston_Cy, 0]))
     piston_Lb.globalMove(SE3([piston_LbCx, piston_Cy, 0]))
     piston_Ra.globalMove(SE3([piston_RaCx, piston_Cy 0]))
     piston_Rb.globalMove(SE3([piston_RbCx, piston_Cy 0]))
-
+%
+%     pulley_aObj.globalMove(SE3([pulley_aCx, pulley_aCy, 0]))
+%     pulley_bObj.globalMove(SE3([pulley_bCx, pulley_Cy, 0]))
 
 %% plot the pulley
     ph=0:.1:pi;
@@ -189,6 +200,10 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
         diaBLy(i)=(piston_Cy+(piston_h*.5)-diaphragm_LBaseH)+(pistonInner_LbCy+(pistonIn_h*.5)-(piston_Cy+(piston_h*.5)-diaphragm_LBaseH))*sin(ph(i));
         diaARx(i)=piston_RaCx+piston_w*.5*cos(ph(i));
         diaARy(i)=(piston_Cy+(piston_h*.5)-diaphragm_RBaseH)+(pistonInner_RaCy+(pistonIn_h*.5)-(piston_Cy+(piston_h*.5)-diaphragm_RBaseH))*sin(ph(i));
+%         diaBLx(i)=piston_LbCx+piston_wL*.5*cos(ph(i));
+%         diaBLy(i)=(piston_Cy+(piston_hL*.5)-diaphragm_LBaseH)+(pistonInner_LbCy+(pistonIn_hL*.5)-(piston_Cy+(piston_hL*.5)-diaphragm_LBaseH))*sin(ph(i));
+%         diaARx(i)=piston_RaCx+piston_w*.5*cos(ph(i));
+%         diaARy(i)=(piston_Cy+(piston_h*.5)-diaphragm_RBaseH)+(pistonInner_RaCy+(pistonIn_h*.5)-(piston_Cy+(piston_h*.5)-diaphragm_RBaseH))*sin(ph(i));
         diaBRx(i)=piston_RbCx+piston_w*.5*cos(ph(i));
         diaBRy(i)=(piston_Cy+(piston_h*.5)-diaphragm_RBaseH)+(pistonInner_RbCy+(pistonIn_h*.5)-(piston_Cy+(piston_h*.5)-diaphragm_RBaseH))*sin(ph(i));
     end
@@ -196,9 +211,9 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
    plt(6)= fill(diaBLx,diaBLy,[1,0,1]);
    plt(7)= fill(diaARx,diaARy,[1,0,1]);
 
-
+%    plt(6)= fill(diaBLx,diaBLy,[1,0,1]);
+%    plt(7)= fill(diaARx,diaARy,[1,0,1]);
    plt(8)= fill(diaBRx,diaBRy,[1,0,1]);
-   
     %%% ploting the water tubes
     water_ALx=piston_LaCx+piston_w*.5*cos(pi/2);
     water_ALy=(piston_Cy+(piston_h*.5))+(pistonInner_LaCy+(pistonIn_h*.5)-(piston_Cy+(piston_h*.5)))*sin(pi/2);
@@ -213,13 +228,13 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
 
 
 
-    plt(9)= plot([water_ALx water_ALx],[water_ALy piston_Cy+.5],'b','LineWidth',4);
-    plt(10)= plot([water_ALx water_BRx],[piston_Cy+.5 piston_Cy+.5],'b','LineWidth',4);
-    plt(11)= plot([water_BRx water_BRx],[piston_Cy+.5 water_BRy],'b','LineWidth',4);
+    plt(9)= plot([water_ALx water_ALx],[water_ALy 5],'b','LineWidth',6);
+    plt(10)= plot([water_ALx water_BRx],[5 5],'b','LineWidth',6);
+    plt(11)= plot([water_BRx water_BRx],[5 water_BRy],'b','LineWidth',6);
 
-    plt(12)= plot([water_BLx water_BLx],[water_BLy piston_Cy+.25],'b','LineWidth',4);
-    plt(13)= plot([water_BLx water_ARx],[piston_Cy+.25 piston_Cy+.25],'b','LineWidth',4);
-    plt(14)= plot([water_ARx water_ARx],[piston_Cy+.25 water_ARy],'b','LineWidth',4);
+    plt(12)= plot([water_BLx water_BLx],[water_BLy 4.5],'b','LineWidth',6);
+    plt(13)= plot([water_BLx water_ARx],[4.5 4.5],'b','LineWidth',6);
+    plt(14)= plot([water_ARx water_ARx],[4.5 water_ARy],'b','LineWidth',6);
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_R*cos(input)],[pulley_Cy pulley_Cy+pulley_R*sin(input)],'b','LineWidth',4);
     plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_R*cos(output)],[pulley_Cy pulley_Cy+10*pulley_R*sin(output)],'color',[.5 .5 .5],'LineWidth',10);
