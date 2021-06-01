@@ -7,9 +7,9 @@ function F = ctlrRDHTPosition(t,X,p)
     dtheta_2 = X(8,:);
     % ddy = -amp*(freq*2*pi)^2*cos(freq*2*pi.*t);
 
-y = p.obstacle_height;
+y = 0;
 dy = 0;
-F =210*(y-theta_2)+.3*(dy-dtheta_2);
+F =200*(y-theta_2)+.1*(dy-dtheta_2);
 
 % F=0;
 end
