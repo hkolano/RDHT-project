@@ -22,7 +22,7 @@ piston_w = .05; %width
 piston_h = .125; %height
 
 % Piston reference geometry center positions
-piston_Cy = p.h+.15; % Height of center of piston
+piston_Cy = .65; % Height of center of piston
 
 piston_LaCx=pulley_aCx-pulley_R; % A and B are input pistons - L (left)
 piston_LbCx=pulley_aCx+pulley_R;
@@ -86,7 +86,7 @@ end
 
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
-plot([-.22 1],[-ball_r -ball_r],'color',[.45 0 .08],'LineWidth',6)
+plot([-.22 1],[-ball_r ],'color',[.45 0 .08],'LineWidth',6)
 
 %%% stationary like to fix the plot
 plot([-.02 -.02],[-.02 1],'color',[1 1 1]);
@@ -111,7 +111,7 @@ ylabel('y Position (m)')
 zlabel('z Position (m)')
 
 % h.figure.Children(1).DataAspectRatioMode = 'manual';
-h.figure.Children(1).DataAspectRatio = [1 1 1];
+% h.figure.Children(1).DataAspectRatio = [1 1 1];
 
 if exportVideo
    v = VideoWriter('puckAnimation.mp4', 'MPEG-4');
@@ -223,7 +223,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(14)= plot([water_ARx water_ARx],[piston_Cy+.25 water_ARy],'b','LineWidth',4);
     
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_R*cos(input)],[pulley_Cy pulley_Cy+pulley_R*sin(input)],'b','LineWidth',4);
-    plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_R*cos(output)],[pulley_Cy pulley_Cy+10*pulley_R*sin(output)],'color',[.5 .5 .5],'LineWidth',2);
+    plt(20)=plot([pulley_bCx pulley_bCx+10*pulley_R*cos(output)],[pulley_Cy pulley_Cy+10*pulley_R*sin(output)],'color',[.5 .5 .5],'LineWidth',10);
     
 
 %
