@@ -99,11 +99,11 @@ end
 
 plot(beltAx,beltAy,'r','LineWidth',4)
 plot(beltBx,beltBy,'r','LineWidth',4)
-plot([-2 12],[0 0],'color',[.45 0 .08],'LineWidth',30)
+plot([-2 12],[0 0],'color',[.45 0 .08],'LineWidth',20)
 
 %%% stationary like to fix the plot
-plot([-2 -2],[-2 12]);
-plot([-2 12],[-2 -2]);
+plot([-4 -4],[-4 12]);
+plot([-4 12],[-4 -4]);
 %%%%% the pulley plot which is  stationary
 ph=0:.1:2*pi;
 for i=1:length(ph)
@@ -235,15 +235,13 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
    plt(5)= fill(diaALx,diaALy,[1,0,1]);
    plt(6)= fill(diaBLx,diaBLy,[1,0,1]);
    plt(7)= fill(diaARx,diaARy,[1,0,1]);
-
-%    plt(6)= fill(diaBLx,diaBLy,[1,0,1]);
-%    plt(7)= fill(diaARx,diaARy,[1,0,1]);
+   
    plt(8)= fill(diaBRx,diaBRy,[1,0,1]);
-    %%% ploting the water tubes
-    water_ALx=piston_LaCx+piston_wL*.5*cos(pi/2);
-    water_ALy=(piston_LaCy+(piston_hL*.5))+(pistonInner_LaCy+(pistonIn_hL*.5)-(piston_LaCy+(piston_hL*.5)))*sin(pi/2);
-    water_BLx=piston_LbCx+piston_wL*.5*cos(pi/2);
-    water_BLy=(piston_LbCy+(piston_hL*.5))+(pistonInner_LbCy+(pistonIn_hL*.5)-(piston_LbCy+(piston_hL*.5)))*sin(pi/2);
+   %%% ploting the water tubes
+   water_ALx=piston_LaCx+piston_wL*.5*cos(pi/2);
+   water_ALy=(piston_LaCy+(piston_hL*.5))+(pistonInner_LaCy+(pistonIn_hL*.5)-(piston_LaCy+(piston_hL*.5)))*sin(pi/2);
+   water_BLx=piston_LbCx+piston_wL*.5*cos(pi/2);
+   water_BLy=(piston_LbCy+(piston_hL*.5))+(pistonInner_LbCy+(pistonIn_hL*.5)-(piston_LbCy+(piston_hL*.5)))*sin(pi/2);
 
 
     water_ARx=piston_RaCx+piston_wR*.5*cos(pi/2);

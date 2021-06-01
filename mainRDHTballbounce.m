@@ -47,8 +47,8 @@ p.bp = 100;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 
 % Torque curve
-p.freq = 20;
-p.ampli=11;
+p.freq = 8;
+p.ampli=.75;
 
 % External disturbance
 % p.dist_amp = .5; % Amplitude of disturbance: ~30 degrees
@@ -67,8 +67,8 @@ p.ampli=11;
 
 %% Simulate the system
 X0 = [.5 0 .5*p.r 0 .5*p.r 0 .5 0, 1.5, 0];
-
-[t_vec, X_vec] = simRDHTballBounce(X0,p);
+ctlr_fun = @(t,X,freq) ctlrRDHTBallBouncing(t,X,p);
+[t_vec, X_vec] = simRDHTballBounce(X0,p,ctlr_fun);
 
 
 %% retrieve control force
@@ -112,6 +112,18 @@ xlabel('Time (s)')
 ylabel('Position (m)')
 title('Bouncy Ball Position')
 
+for i=1:length(t_vec)
+y(i) = p.ampli*sin(p.freq*2*pi.*t_vec(i));    
+end
+
+figure
+
+plot(t_vec,y,'r')
+hold on
+plot(t_vec, X_vec(7,:),'b')
+title('Desired vs actual')
+legend('desired pose','actual pose')
+
 % figure
 % plot(t_vec, X_vec(:,3))
 % hold on
@@ -129,7 +141,7 @@ title('Bouncy Ball Position')
 % title('Input-Output shaft')
 
 % % % % Animate
-% exportVideo = false;
-% playbackRate = 1;
-% RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
+% % exportVideo = false;
+% % playbackRate = 1;
+% % RDHTAnimation_ball(p,t_vec,X_vec,exportVideo,playbackRate);
 

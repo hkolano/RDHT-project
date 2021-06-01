@@ -1,4 +1,4 @@
-function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask] 
+function [t_vec, X_vec] = simRDHTballBounce(X0,p,ctlr_fun) %  sol_set, mask] 
     %{
     Simulation script for RDHT simulation
 
@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 10;
+    t_end = 2;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -36,9 +36,9 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
         'Events', rod_event_fun);
 
     % Bind dynamics function
-    free_dyn_fun = @(t,X)freedyn(t,X,p);
-    ball_floor_dyn_fun = @(t,X)dyn_ballfloor(t,X,p);
-    ball_rod_dyn_fun = @(t,X)dyn_ballrod(t,X,p);
+    free_dyn_fun = @(t,X)freedyn(t,X,p,ctlr_fun);
+    ball_floor_dyn_fun = @(t,X)dyn_ballfloor(t,X,p,ctlr_fun);
+    ball_rod_dyn_fun = @(t,X)dyn_ballrod(t,X,p,ctlr_fun);
     
     % States
     % 1: ball freefloating
@@ -112,12 +112,12 @@ function [t_vec, X_vec] = simRDHTballBounce(X0,p) %  sol_set, mask]
 
 end % simRDHT
 
-function dX = freedyn(t,X,p)
+function dX = freedyn(t,X,p,ctlr_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
+    Tau_ctrl = ctlr_fun(t,X,p.freq);;
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -144,18 +144,19 @@ function dX = freedyn(t,X,p)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)     -p.bp*p.r^2/(p.Ip+p.Irod)];
-    dX_system = A*X(1:8) + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
+    dX_system = A*X(1:8) + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; 0];
     dX_ball = [0 1; 0 0]*X(9:10)+[0; -9.81];
     dX = [dX_system; dX_ball];
 end % dynamics
 
 %% Hybrid functions
-function dX = dyn_ballfloor(t,X,p)
+function dX = dyn_ballfloor(t,X,p,ctlr_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
+%     Tau_in = p.ampli*cos(p.freq*t);
+      Tau_ctrl = ctlr_fun(t,X,p.freq);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -182,18 +183,19 @@ function dX = dyn_ballfloor(t,X,p)
         0                   0                   p.kh*p.A1/(p.a*M2)         0                           (-kpaOVA2-p.kh*p.A2/p.a)/M2  (-bpaOVA2-p.bf*p.A1/p.a)/M2  kpaOVA2*p.r/M2     bpaOVA2*p.r/M2; ...
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)];
-    dX_system = A*X(1:8) + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0];
+    dX_system = A*X(1:8) + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; 0];
     dX_ball = [0 1; -p.kball/p.mball 0]*X(9:10)+[0; -9.81];
     dX = [dX_system; dX_ball];
 end % dynamics
 
 %% Hybrid functions
-function dX = dyn_ballrod(t,X,p)
+function dX = dyn_ballrod(t,X,p,ctlr_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2,
     % y, y1)
     % p == parameters structure
-    Tau_in = p.ampli*cos(p.freq*t);
+%     Tau_in = p.ampli*cos(p.freq*t);
+      Tau_ctrl = ctlr_fun(t,X,p.freq);
 %     Tau_in = 0;
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
@@ -225,7 +227,8 @@ function dX = dyn_ballrod(t,X,p)
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)    -p.bp*p.r^2/(p.Ip+p.Irod)        0       0; ...
         0                   0                   0                           0                           0                           0                           0                    0              0        1; ...
         0                   0                   0                           0                           0                           0                           0                0               0       0];
-    dX = A*X + [0; Tau_in/p.Ip; 0; 0; 0; 0; 0; 0; 0; -9.81+p.kball*(dist)];
+   dX = A*X + [0; Tau_ctrl/p.Ip; 0; 0; 0; 0; 0; -p.kball*(dist)*0.75*p.l_rod/(p.Ip+p.Irod); 0; -9.81+p.kball*(dist)];
+
 
 end % dynamics
 %
