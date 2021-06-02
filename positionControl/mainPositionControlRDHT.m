@@ -54,7 +54,7 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
 
 %% Plotting
-% %% Plotting
+% % %% Plotting
 % figure
 % % plot(t_vec, X_vec(1,:))
 % plot(t_vec, X_vec(:,1));
@@ -112,33 +112,50 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 % ylabel('Position (rad)')
 % legend('Desired position', 'Actual position')
 % title('Position control')
-
-
-exportVideo = False;
-playbackRate = 1;
-RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
-
 % 
-% for i=1:100
-%     freq=i;
-%      amp=.5;
-%     y = amp*sin(freq*2*pi.*t_vec);
-%     [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
 % 
-%     fq(i)=i;
-%    output_amp = peak2peak(X_vec(:,7));
-%    input_amp = peak2peak(y);
-%    ratio(i) =output_amp/ input_amp;
+% % exportVideo = False;
+% % playbackRate = 1;
+% % RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
 % 
-%     
-%    
-% end
+for i=1:100
+    freq=i;
+     amp=.5;
+    [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+    y = amp*sin(freq*2*pi.*t_vec);
+    fq(i)=i;
+    d = amp*cos(5*2*pi.*t_vec);
+   output_amp = peak2peak(X_vec(:,7));
+   input_amp = peak2peak(y);
+   ratio(i) =output_amp/ input_amp;
+    rms_value(i)=rms(X_vec(:,7)-y);
+    rms_Distvalue(i)=rms(X_vec(:,7)-d);
+    
+   
+end
 % figure
-% 
 % plot(fq,ratio,'md')
 % xlabel('Frequency (Hz)')
 % ylabel('Amplitude Ratio')
-% title('Position control frequency plot')
+% title('Position Control frequency plot')
 % ylim([-2 5])
 
+figure
+plot(fq,rms_value,'md')
+xlabel('Frequency (Hz)')
+ylabel('RMS ')
+title('Position Control frequency plot')
+ylim([0 1])
 
+figure
+plot(fq,rms_Distvalue,'md')
+xlabel('Frequency (Hz)')
+ylabel('RMS Disturbance ')
+title('Position Control frequency plot')
+ylim([0 1])
+
+figure
+semilogx(fq,rms_value)
+xlabel('Frequency (Hz)')
+ylabel('RMS )')
+title('Position Control frequency plot')

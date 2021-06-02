@@ -30,9 +30,10 @@ p.mw2 = p.mw/2;   % Mass of half the water
 
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
-p.k_horse = 1573;% Stiffness of the hose N/m of y1
+p.k_hose = 1573;% Stiffness of the hose N/m of y1
 p.k_accu = 100;
-p.kh=(p.k_horse*p.k_accu)/(p.k_horse+p.k_accu);
+p.kh=(p.k_hose*p.k_accu)/(p.k_hose+p.k_accu);
+% p.kh = p.k_hose;
 
 
 % Damping
@@ -56,63 +57,63 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPositionPassive(t,X,freq);
 [t_vec, X_vec] = simPositionControlPassiveRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
 
 %% Plotting
-figure
-% plot(t_vec, X_vec(1,:))
-plot(t_vec, X_vec(:,1));
-hold on
-plot(t_vec, X_vec(:,7))
-% plot(t_vec, 5*sin(t_vec))
-legend('input pulley angle', 'output pulley angle')
-xlabel('Time (s)')
-ylabel('Radians')
-title('Passive Dynamics Position control')
-
 % figure
-% plot(t_vec, X_vec(:,2));
-% legend('D Theta 1')
-
-figure
-plot(t_vec, X_vec(:,3))
-hold on
-plot(t_vec, X_vec(:,5))
-legend('input piston displacement', 'output piston displacement')
-xlabel('Time (s)')
-ylabel('Displacement (m)')
-title('Passive Dynamics Position control')
-%
+% % plot(t_vec, X_vec(1,:))
+% plot(t_vec, X_vec(:,1));
+% hold on
+% plot(t_vec, X_vec(:,7))
+% % plot(t_vec, 5*sin(t_vec))
+% legend('input pulley angle', 'output pulley angle')
+% xlabel('Time (s)')
+% ylabel('Radians')
+% title('Passive Dynamics Position control')
+% 
+% % figure
+% % plot(t_vec, X_vec(:,2));
+% % legend('D Theta 1')
+% 
 % figure
-% plot(t_vec, X_vec(:,4))
-% legend('dx1')
-
-figure
-
-plot(t_vec, X_vec(:,7)-X_vec(:,1))
-xlabel('Time (s)')
-ylabel('Position error (rad)')
-title('Input-Output shaft')
-title('Passive Dynamics Position control')
- amp=.5;
- freq=1;
- 
-figure
-dy = amp*freq*2*pi*cos(freq*2*pi.*t_vec);
-plot(t_vec, dy)
-hold on
-plot(t_vec, X_vec(:,8))
-xlabel('Time (s)')
-ylabel('Velocity (rad/s)')
-legend('Desired velocity', 'Actual velocity')
-title('Passive Dynamics Position control')
-
-figure
-y = amp*sin(freq*2*pi.*t_vec);
-plot(t_vec, y)
-hold on
-plot(t_vec, X_vec(:,7))
-xlabel('Time (s)')
-ylabel('Position (rad)')
-legend('Desired position', 'Actual position')
-title('Passive Dynamics Position control')
+% plot(t_vec, X_vec(:,3))
+% hold on
+% plot(t_vec, X_vec(:,5))
+% legend('input piston displacement', 'output piston displacement')
+% xlabel('Time (s)')
+% ylabel('Displacement (m)')
+% title('Passive Dynamics Position control')
+% %
+% % figure
+% % plot(t_vec, X_vec(:,4))
+% % legend('dx1')
+% 
+% figure
+% 
+% plot(t_vec, X_vec(:,7)-X_vec(:,1))
+% xlabel('Time (s)')
+% ylabel('Position error (rad)')
+% title('Input-Output shaft')
+% title('Passive Dynamics Position control')
+%  amp=.5;
+%  freq=1;
+%  
+% figure
+% dy = amp*freq*2*pi*cos(freq*2*pi.*t_vec);
+% plot(t_vec, dy)
+% hold on
+% plot(t_vec, X_vec(:,8))
+% xlabel('Time (s)')
+% ylabel('Velocity (rad/s)')
+% legend('Desired velocity', 'Actual velocity')
+% title('Passive Dynamics Position control')
+% 
+% figure
+% y = amp*sin(freq*2*pi.*t_vec);
+% plot(t_vec, y)
+% hold on
+% plot(t_vec, X_vec(:,7))
+% xlabel('Time (s)')
+% ylabel('Position (rad)')
+% legend('Desired position', 'Actual position')
+% title('Passive Dynamics Position control')
 % 
 % exportVideo = 1;
 % playbackRate = 1;
@@ -122,22 +123,82 @@ title('Passive Dynamics Position control')
 for i=1:100
     freq=i;
      amp=.5;
-    y = amp*sin(freq*2*pi.*t_vec);
     [t_vec, X_vec] = simPositionControlPassiveRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+    y = amp*sin(freq*2*pi.*t_vec);
     fq(i)=i;
+    
    output_amp = peak2peak(X_vec(:,7));
    input_amp = peak2peak(y);
    ratio(i) =output_amp/ input_amp;
+    rms_value1(i)=rms(X_vec(:,7)-y);
+    
+   
+end
+% figure
+% plot(fq,ratio,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('Amplitude Ratio')
+% title('Passive dynamics frequency plot')
+% ylim([-2 5])
 
+% figure
+% plot(fq,rms_value1,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('RMS ')
+% title('Passive dynamics frequency plot')
+% ylim([0 5])
+
+p.k_accu = 1000;
+p.kh=(p.k_hose*p.k_accu)/(p.k_hose+p.k_accu);
+for i=1:100
+    freq=i;
+     amp=.5;
+    [t_vec, X_vec] = simPositionControlPassiveRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+    y = amp*sin(freq*2*pi.*t_vec);
+    fq(i)=i;
+    
+   output_amp = peak2peak(X_vec(:,7));
+   input_amp = peak2peak(y);
+   ratio(i) =output_amp/ input_amp;
+    rms_value2(i)=rms(X_vec(:,7)-y);
+    
+   
+end
+% figure
+% plot(fq,ratio,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('Amplitude Ratio')
+% title('Passive dynamics frequency plot')
+% ylim([-2 5])
+
+p.k_accu = 5000;
+p.kh=(p.k_hose*p.k_accu)/(p.k_hose+p.k_accu);
+for i=1:100
+    freq=i;
+     amp=.5;
+    [t_vec, X_vec] = simPositionControlPassiveRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+    y = amp*sin(freq*2*pi.*t_vec);
+    fq(i)=i;
+    
+   output_amp = peak2peak(X_vec(:,7));
+   input_amp = peak2peak(y);
+   ratio(i) =output_amp/ input_amp;
+    rms_value3(i)=rms(X_vec(:,7)-y);
     
    
 end
 figure
-plot(fq,ratio,'md')
+plot(fq,rms_value1,'md')
+hold on
+plot(fq,rms_value2,'md')
+plot(fq,rms_value3,'md')
 xlabel('Frequency (Hz)')
-ylabel('Amplitude Ratio')
+ylabel('RMS )')
 title('Passive dynamics frequency plot')
-ylim([-2 5])
+ylim([0 5])
 
-
-
+figure
+plot(fq,rms_value1,'b')
+xlabel('Frequency (Hz)')
+ylabel('RMS )')
+title('Passive dynamics frequency plot')
