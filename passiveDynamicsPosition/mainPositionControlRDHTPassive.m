@@ -31,7 +31,7 @@ p.mw2 = p.mw/2;   % Mass of half the water
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.k_horse = 1573;% Stiffness of the hose N/m of y1
-p.k_accu = 8000;
+p.k_accu = 100;
 p.kh=(p.k_horse*p.k_accu)/(p.k_horse+p.k_accu);
 
 
@@ -47,7 +47,7 @@ p.freq=1
 traj_fun = @(t) disTrajPositionPassive(p.dist_amp, p.dist_freq, t);% External disturbance
 % Set up controller
 c.Kp = 10000;
-c.Kd = 100;
+c.Kd = 1000;
 tau_des = .1;
 
 % set up controller
@@ -113,13 +113,13 @@ xlabel('Time (s)')
 ylabel('Position (rad)')
 legend('Desired position', 'Actual position')
 title('Passive Dynamics Position control')
+% 
+% exportVideo = 1;
+% playbackRate = 1;
+% RDHTAnimationPosConPassive(p,t_vec,X_vec,exportVideo,playbackRate);
 
-exportVideo = false;
-playbackRate = 1;
-RDHTAnimationPosConPassive(p,t_vec,X_vec,exportVideo,playbackRate);
 
-
-for i=1:80
+for i=1:100
     freq=i;
      amp=.5;
     y = amp*sin(freq*2*pi.*t_vec);
@@ -136,8 +136,8 @@ figure
 plot(fq,ratio,'md')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude Ratio')
-title('Passive dynamics .bode plot')
-ylimit([-2 2])
+title('Passive dynamics frequency plot')
+ylim([-2 5])
 
 
 

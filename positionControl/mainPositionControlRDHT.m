@@ -39,7 +39,7 @@ p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
 p.dist_amp = 4500; % Amplitude of disturbance: ~30 degrees
-p.dist_freq = 2; % Frequency of disturbance, Hz
+p.dist_freq = 5; % Frequency of disturbance, Hz
 p.freq=1
 traj_fun = @(t) disTrajPosition(p.dist_amp, p.dist_freq, t);% External disturbance
 % Set up controller
@@ -54,91 +54,91 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
 
 %% Plotting
-%% Plotting
-figure
-% plot(t_vec, X_vec(1,:))
-plot(t_vec, X_vec(:,1));
-hold on
-plot(t_vec, X_vec(:,7))
-% plot(t_vec, 5*sin(t_vec))
-legend('input pulley angle', 'output pulley angle')
-xlabel('Time (s)')
-ylabel('Radians')
-title('Position control')
-
+% %% Plotting
 % figure
-% plot(t_vec, X_vec(:,2));
-% legend('D Theta 1')
-
-figure
-plot(t_vec, X_vec(:,3))
-hold on
-plot(t_vec, X_vec(:,5))
-legend('input piston displacement', 'output piston displacement')
-xlabel('Time (s)')
-ylabel('Displacement (m)')
-title(' Position control')
-%
+% % plot(t_vec, X_vec(1,:))
+% plot(t_vec, X_vec(:,1));
+% hold on
+% plot(t_vec, X_vec(:,7))
+% % plot(t_vec, 5*sin(t_vec))
+% legend('input pulley angle', 'output pulley angle')
+% xlabel('Time (s)')
+% ylabel('Radians')
+% title('Position control')
+% 
+% % figure
+% % plot(t_vec, X_vec(:,2));
+% % legend('D Theta 1')
+% 
 % figure
-% plot(t_vec, X_vec(:,4))
-% legend('dx1')
+% plot(t_vec, X_vec(:,3))
+% hold on
+% plot(t_vec, X_vec(:,5))
+% legend('input piston displacement', 'output piston displacement')
+% xlabel('Time (s)')
+% ylabel('Displacement (m)')
+% title(' Position control')
+% %
+% % figure
+% % plot(t_vec, X_vec(:,4))
+% % legend('dx1')
+% 
+% figure
+% 
+% plot(t_vec, X_vec(:,7)-X_vec(:,1))
+% xlabel('Time (s)')
+% ylabel('Position error (rad)')
+% title('Input-Output shaft')
+% title('Position control')
+%  amp=.5;
+%  freq=1;
+%  
+% figure
+% dy = amp*freq*2*pi*cos(freq*2*pi.*t_vec);
+% plot(t_vec, dy)
+% hold on
+% plot(t_vec, X_vec(:,8))
+% xlabel('Time (s)')
+% ylabel('Velocity (rad/s)')
+% legend('Desired velocity', 'Actual velocity')
+% title('Position control')
+% 
+% figure
+% y = amp*sin(freq*2*pi.*t_vec);
+% plot(t_vec, y)
+% hold on
+% plot(t_vec, X_vec(:,7))
+% xlabel('Time (s)')
+% ylabel('Position (rad)')
+% legend('Desired position', 'Actual position')
+% title('Position control')
 
-figure
 
-plot(t_vec, X_vec(:,7)-X_vec(:,1))
-xlabel('Time (s)')
-ylabel('Position error (rad)')
-title('Input-Output shaft')
-title('Position control')
- amp=.5;
- freq=1;
- 
-figure
-dy = amp*freq*2*pi*cos(freq*2*pi.*t_vec);
-plot(t_vec, dy)
-hold on
-plot(t_vec, X_vec(:,8))
-xlabel('Time (s)')
-ylabel('Velocity (rad/s)')
-legend('Desired velocity', 'Actual velocity')
-title('Position control')
-
-figure
-y = amp*sin(freq*2*pi.*t_vec);
-plot(t_vec, y)
-hold on
-plot(t_vec, X_vec(:,7))
-xlabel('Time (s)')
-ylabel('Position (rad)')
-legend('Desired position', 'Actual position')
-title('Position control')
-
-
-exportVideo = 1;
+exportVideo = False;
 playbackRate = 1;
 RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
 
-
-for i=1:100
-    freq=i;
-     amp=.5;
-    y = amp*sin(freq*2*pi.*t_vec);
-    [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
-
-    fq(i)=i;
-   output_amp = peak2peak(X_vec(:,7));
-   input_amp = peak2peak(y);
-   ratio(i) =output_amp/ input_amp;
-
-    
-   
-end
-figure
-
-plot(fq,ratio,'md')
-xlabel('Frequency (Hz)')
-ylabel('Amplitude Ratio')
-title('Position control frequency plot')
-ylimit([-2 2])
+% 
+% for i=1:100
+%     freq=i;
+%      amp=.5;
+%     y = amp*sin(freq*2*pi.*t_vec);
+%     [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+% 
+%     fq(i)=i;
+%    output_amp = peak2peak(X_vec(:,7));
+%    input_amp = peak2peak(y);
+%    ratio(i) =output_amp/ input_amp;
+% 
+%     
+%    
+% end
+% figure
+% 
+% plot(fq,ratio,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('Amplitude Ratio')
+% title('Position control frequency plot')
+% ylim([-2 5])
 
 

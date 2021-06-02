@@ -3,7 +3,7 @@
 %        amp = amplitude 
 %        t = time (scalar or vector)
 amp=1000;
-% freq=5;
+ freq=5;
 y = amp*cos(freq*2*pi.*t);
 dy = -amp*freq*2*pi*sin(freq*2*pi.*t);
 ddy = -amp*(freq*2*pi)^2*cos(freq*2*pi.*t);

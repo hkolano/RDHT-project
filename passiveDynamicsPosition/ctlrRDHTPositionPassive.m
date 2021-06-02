@@ -8,11 +8,11 @@ function F = ctlrRDHTPositionPassive(t,X,freq)
     % ddy = -amp*(freq*2*pi)^2*cos(freq*2*pi.*t);
 
 amp=.5;
-  freq=1;
+%   freq=1;
 
 y = amp*sin(freq*2*pi.*t);
 dy = amp*freq*2*pi*cos(freq*2*pi.*t);
-F =180*(y-theta_2)+.1*(dy-dtheta_2);
+F =2*(y-theta_2)+.01*(dy-dtheta_2);
 
 % F=0;
 end
