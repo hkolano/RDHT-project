@@ -31,7 +31,7 @@ p.mw2 = p.mw/2;   % Mass of half the water
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.k_horse = 1573;% Stiffness of the hose N/m of y1
-p.k_accu = 1000000;
+p.k_accu = 8000;
 p.kh=(p.k_horse*p.k_accu)/(p.k_horse+p.k_accu);
 
 
@@ -42,7 +42,7 @@ p.bf = 2.137;     % Viscous friction N/(m/s) of y1
 %% Simulate the system
 X0 = [0 0 0 0 0 0 0 0];
 p.dist_amp = 4500; % Amplitude of disturbance: ~30 degrees
-p.dist_freq = 2; % Frequency of disturbance, Hz
+p.dist_freq = 5; % Frequency of disturbance, Hz
 p.freq=1
 traj_fun = @(t) disTrajPositionPassive(p.dist_amp, p.dist_freq, t);% External disturbance
 % Set up controller
@@ -124,21 +124,20 @@ for i=1:80
      amp=.5;
     y = amp*sin(freq*2*pi.*t_vec);
     [t_vec, X_vec] = simPositionControlPassiveRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
-
     fq(i)=i;
-   output_amp = peak2peak(X_vec(:,7))
-   input_amp = peak2peak(y)
+   output_amp = peak2peak(X_vec(:,7));
+   input_amp = peak2peak(y);
    ratio(i) =output_amp/ input_amp;
 
     
    
 end
 figure
-
 plot(fq,ratio,'md')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude Ratio')
 title('Passive dynamics .bode plot')
+ylimit([-2 2])
 
 
 

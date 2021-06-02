@@ -114,12 +114,12 @@ legend('Desired position', 'Actual position')
 title('Position control')
 
 
-% exportVideo = 1;
-% playbackRate = 1;
-% RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
+exportVideo = 1;
+playbackRate = 1;
+RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
 
 
-for i=1:80
+for i=1:100
     freq=i;
      amp=.5;
     y = amp*sin(freq*2*pi.*t_vec);
@@ -139,6 +139,6 @@ plot(fq,ratio,'md')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude Ratio')
 title('Position control frequency plot')
-
+ylimit([-2 2])
 
 
