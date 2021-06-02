@@ -32,6 +32,8 @@ p.mw2 = p.mw/2;   % Mass of half the water
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.kh = 1573;   % Stiffness of the hose N/m of y1
 
+p.h=0;
+
 % Damping
 p.bp = 200;     % Damping of the belt
 p.bf = 2.137;     % Viscous friction N/(m/s) of y1
@@ -52,7 +54,8 @@ tau_des = .1;
 ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 
 [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
-
+dist= .5*cos(p.dist_freq*2*pi.*t_vec);
+traj= .5*cos(freq*2*pi.*t_vec);
 %% Plotting
 % % %% Plotting
 % figure
@@ -114,25 +117,25 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 % title('Position control')
 % 
 % 
-% % exportVideo = False;
-% % playbackRate = 1;
-% % RDHTAnimationPosCon(p,t_vec,X_vec,exportVideo,playbackRate);
-% 
-for i=1:100
-    freq=i;
-     amp=.5;
-    [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
-    y = amp*sin(freq*2*pi.*t_vec);
-    fq(i)=i;
-    d = amp*cos(5*2*pi.*t_vec);
-   output_amp = peak2peak(X_vec(:,7));
-   input_amp = peak2peak(y);
-   ratio(i) =output_amp/ input_amp;
-    rms_value(i)=rms(X_vec(:,7)-y);
-    rms_Distvalue(i)=rms(X_vec(:,7)-d);
-    
-   
-end
+exportVideo = 1;
+playbackRate = 1;
+RDHTAnimationPosCon(p,t_vec,X_vec,dist,traj,exportVideo,playbackRate);
+
+% for i=1:100
+%     freq=i;
+%      amp=.5;
+%     [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq,traj_fun, ctlr_fun);
+%     y = amp*sin(freq*2*pi.*t_vec);
+%     fq(i)=i;
+%     d = amp*cos(5*2*pi.*t_vec);
+%    output_amp = peak2peak(X_vec(:,7));
+%    input_amp = peak2peak(y);
+%    ratio(i) =output_amp/ input_amp;
+%     rms_value(i)=rms(X_vec(:,7)-y);
+%     rms_Distvalue(i)=rms(X_vec(:,7)-d);
+%     
+%    
+% end
 % figure
 % plot(fq,ratio,'md')
 % xlabel('Frequency (Hz)')
@@ -140,22 +143,22 @@ end
 % title('Position Control frequency plot')
 % ylim([-2 5])
 
-figure
-plot(fq,rms_value,'md')
-xlabel('Frequency (Hz)')
-ylabel('RMS ')
-title('Position Control frequency plot')
-ylim([0 1])
-
-figure
-plot(fq,rms_Distvalue,'md')
-xlabel('Frequency (Hz)')
-ylabel('RMS Disturbance ')
-title('Position Control frequency plot')
-ylim([0 1])
-
-figure
-semilogx(fq,rms_value)
-xlabel('Frequency (Hz)')
-ylabel('RMS )')
-title('Position Control frequency plot')
+% figure
+% plot(fq,rms_value,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('RMS ')
+% title('Position Control frequency plot')
+% ylim([0 1])
+% 
+% figure
+% plot(fq,rms_Distvalue,'md')
+% xlabel('Frequency (Hz)')
+% ylabel('RMS Disturbance ')
+% title('Position Control frequency plot')
+% ylim([0 1])
+% 
+% figure
+% semilogx(fq,rms_value)
+% xlabel('Frequency (Hz)')
+% ylabel('RMS )')
+% title('Position Control frequency plot')
