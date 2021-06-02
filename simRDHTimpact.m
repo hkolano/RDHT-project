@@ -12,7 +12,7 @@ function [t_vec, X_vec] = simRDHTimpact(X0,p, ctlr_fun) %  sol_set, mask]
 
     % Running time
     t_start = 0;
-    t_end = 3;
+    t_end = 2;
     dt = 0.005;
 
     t_vec = t_start:dt:t_end;
@@ -88,7 +88,7 @@ function dX = freedyn(t,X,p,ctrl_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_ctrl = ctrl_fun(t);
+    Tau_ctrl = ctrl_fun(t,X);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -120,7 +120,7 @@ function dX = dyn_ballfloor(t,X,p,ctrl_fun)
     % t == time
     % X == the state (theta1, dtheta1, x1, dx1, x2, dx2, theta2, dtheta2)
     % p == parameters structure
-    Tau_ctrl = ctrl_fun(t);
+    Tau_ctrl = ctrl_fun(t,X);
 
     M1 = p.mw2*p.A1/p.a + p.mpd*p.a/p.A1;
     M2 = p.mw2*p.A2/p.a + p.mpd*p.a/p.A2;
@@ -161,8 +161,8 @@ function [eventVal, isterminal, direction] = freeBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h-0.75*p.l_rod*sin(X(7));
-    dist = height_rod-p.obstacle_height;
+    height_rod = p.h-p.l_rod*sin(X(7));
+    dist = height_rod-(p.obstacle_height+p.rball);
     eventVal = dist;   % when spring at equilibrium distance...
     isterminal = 1;     % stops the sim
     direction = -1;      % any direction
@@ -173,8 +173,8 @@ function [eventVal, isterminal, direction] = contactBallEvent(t,X,p)
     % eventVal: Vector of event functions that halt at zero crossings
     % isterminal: if the simulation should halt (yes for both)
     % direction: which direction of crossing should the sim halt (positive)
-    height_rod = p.h-0.75*p.l_rod*sin(X(7));
-    dist = height_rod-p.obstacle_height;
+    height_rod = p.h-p.l_rod*sin(X(7));
+    dist = height_rod-(p.obstacle_height+p.rball);
     eventVal = dist;   % when spring at equilibrium distance...
     isterminal = 1;     % stops the sim
     direction = 1;      % any direction
