@@ -138,7 +138,7 @@ figure
 plot(fq,ratio,'md')
 xlabel('Frequency (Hz)')
 ylabel('Amplitude Ratio')
-title('Position control bode plot')
+title('Position control frequency plot')
 
 
 

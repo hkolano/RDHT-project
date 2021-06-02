@@ -31,7 +31,7 @@ p.mw2 = p.mw/2;   % Mass of half the water
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.k_horse = 1573;% Stiffness of the hose N/m of y1
-p.k_accu = 10000;
+p.k_accu = 1000000;
 p.kh=(p.k_horse*p.k_accu)/(p.k_horse+p.k_accu);
 
 
@@ -114,7 +114,7 @@ ylabel('Position (rad)')
 legend('Desired position', 'Actual position')
 title('Passive Dynamics Position control')
 
-exportVideo = 1;
+exportVideo = false;
 playbackRate = 1;
 RDHTAnimationPosConPassive(p,t_vec,X_vec,exportVideo,playbackRate);
 
