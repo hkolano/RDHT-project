@@ -55,7 +55,7 @@ ctlr_fun = @(t,X,freq) ctlrRDHTPosition(t,X,freq);
 
 [t_vec, X_vec] = simPositionControlRDHT(X0,p,c,freq, traj_fun, ctlr_fun);
 dist= .5*cos(p.dist_freq*2*pi.*t_vec);
-traj= .5*cos(freq*2*pi.*t_vec);
+traj= .5*sin(freq*2*pi.*t_vec);
 %% Plotting
 % % %% Plotting
 % figure

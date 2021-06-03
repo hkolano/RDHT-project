@@ -240,7 +240,7 @@ for t_plt = t(1):playbackRate*1.0/FPS:t(end)
     plt(15)=plot([pulley_aCx pulley_aCx+pulley_R*cos(input)],[pulley_Cy pulley_Cy+pulley_R*sin(input)],'b','LineWidth',2);
     plt(20)=plot([pulley_bCx pulley_bCx+pulley_R*cos(output)],[pulley_Cy pulley_Cy+pulley_R*sin(output)],'color',[.5 .5 .5],'LineWidth',2);
     plt(21)=plot([.15 .15+1.5*pulley_R*cos(dist)],[-.1 -.1+1.5*pulley_R*sin(dist)],'color',[1 0 0],'LineWidth',2);
-    plt(22)=plot([.25 .25+1.5*pulley_R*cos(-traject)],[-.1 -.1+1.5*pulley_R*sin(-traject)],'color',[1 0 0],'LineWidth',2);
+    plt(22)=plot([.25 .25+1.5*pulley_R*cos(traject)],[-.1 -.1+1.5*pulley_R*sin(traject)],'color',[1 0 0],'LineWidth',2);
 
     
 %
