@@ -24,13 +24,13 @@ p.Irod = p.mrod*p.l_rod^2/3;
 % Stiffnesses
 p.kp = 2014000; % Stiffness of the belt N/m 
 p.khose = 1573;   % Stiffness of the hose N/m of y1
-p.kacc = 750; % Stiffness of accumulator, complete guess
-p.kh = 1/(1/p.khose+1/p.kacc); % Effective stiffness of "hose"
+p.kacc = 100; % Stiffness of accumulator, complete guess
+% p.kh = 1/(1/p.khose+1/p.kacc); % Effective stiffness of "hose"
 p.kh = p.khose;
 
 % Damping
 % p.bp = 100;     % Damping of the belt
-p.bp = 2;
+p.bp = 1;
 p.bf = 2.137;     % V
 k = 0;
 b = 0;
@@ -52,13 +52,16 @@ A = [0                 1                   0                           0        
         0                   0                   0                           0                           0                           0                           0                   1; ...
         0                   0                   0                           0                           p.kp*p.r/(p.Ip+p.Irod)      p.bp*p.r/(p.Ip+p.Irod)      -p.kp*p.r^2/(p.Ip+p.Irod)     -p.bp*p.r^2/(p.Ip+p.Irod)];
 [V,D] = eig(A);
-diag(D)
+Ddiag = diag(D)
 figure
 plot(D, 'md')
 title('Small damping')
 
+sys = zpk([],[Ddiag(1),Ddiag(2)],1)
+[wn, zeta] = damp(sys)
+
 %% high
-p.bp = 202.0;
+p.bp = 200.0;
 A2 = [0                 1                   0                           0                           0                           0                           0                   0; ...
         -p.kp*p.r^2/p.Ip     -p.bp*p.r^2/p.Ip    p.kp*p.r/p.Ip             p.bp*p.r/p.Ip               0                           0                           0                   0; ...
         0                   0                   0                           1                           0                           0                           0                   0; ...
@@ -70,7 +73,11 @@ A2 = [0                 1                   0                           0       
 [V2,D2] = eig(A2);
 D2diag = diag(D2)
 sys = zpk([],[D2diag(1),D2diag(2)],1)
-damp(sys)
-% figure
-% plot(D2, 'gd')
-% title('Larger damping')
+% sys2 = zpk([],[D2diag(3), D2diag(4)],1)
+% sys3 = zpk([],[D2diag(7), D2diag(8)],1)
+[wn, zeta] = damp(sys)
+% [wn, zeta] = damp(sys2)
+% [wn, zeta] = damp(sys3)
+figure
+plot(D2, 'gd')
+title('Larger damping')

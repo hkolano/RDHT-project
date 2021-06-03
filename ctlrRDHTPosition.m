@@ -8,14 +8,22 @@ function F = ctlrRDHTPosition(t,X,p)
     
     if t < 1/(2*p.freq)
         y = p.ampli*-cos(p.freq*2*pi*t);
+        dy = p.ampli*p.freq*2*pi*sin(p.freq*2*pi*t);
     else
         y = p.des_theta;
+        dy = 0;
     end
    
     % ddy = -amp*(freq*2*pi)^2*cos(freq*2*pi.*t);
 
-dy = 0;
-F =10*(y-theta_2)+0*(dy-dtheta_2);
+F =20*(y-theta_2)+.1*(dy-dtheta_2);
+% F = 0;
+
+if F > 20
+    F = 20;
+elseif F < -20
+    F = -20;
+end
 
 % F=0;
 end

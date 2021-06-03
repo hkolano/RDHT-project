@@ -1,18 +1,13 @@
 function F = ctlrRDHTforce2(t,X,c,p,tau_des)
-    % Find desired linear force on belt
-    F_des = tau_des/p.r;
-    % Find desired compression of spring (delta_length)
-    dl_des = F_des/p.kp;
-    
-    x_2 = X(5,:);
-    dx_2 = X(6,:);
-    theta_2 = X(7,:);
-    dtheta_2 = X(8,:);
-    
-%     curr_dl = theta_2*p.r-x_2
-    
-%     F = c.Kp*(dl_des-(theta_2*p.r-x_2))+ ...
-%         c.Kd*(dtheta_2*p.r-dx_2);
-    F = .1;
-%     F = 0;
+
+    tau_out = [0  0  0    0   p.kp*p.r    p.bp*p.r    -p.kp*p.r^2     -p.bp*p.r^2]*X;
+    F = -c.k*(tau_out-tau_des) + tau_des;
+
+%         F = tau_des;
+    if F > 20
+        F = 20;
+    elseif F < -20
+        F = -20;
+    end
+
 end

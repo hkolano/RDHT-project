@@ -114,7 +114,7 @@ zlabel('z Position (m)')
 h.figure.Children(1).DataAspectRatio = [1 1 1];
 
 if exportVideo
-   v = VideoWriter('puckAnimation.mp4', 'MPEG-4');
+   v = VideoWriter('ImpactAnmiation.mp4', 'MPEG-4');
    v.FrameRate = FPS;
    open(v)
 end
